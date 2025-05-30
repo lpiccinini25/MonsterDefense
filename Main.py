@@ -9,8 +9,11 @@ from pygame.locals import *
 clock = pygame.time.Clock()
 
 def main():
+
    placing = False
    tower = ""
+
+   towerList = []
    pygame.display.update()
 
 
@@ -33,13 +36,18 @@ def main():
         clock.tick(60)
 
         placingTower, towerNow = shop.updatePurchasables(event_list)
+
         if placingTower:
             placing = True
             tower = towerNow
         
         if placing:
             place = placeItem(tower)
+            placing = place.update(towerList)
             place.draw(screen)
+
+        for tower in towerList:
+            tower.draw(screen)
 
         shop.drawPurchasables()
 
