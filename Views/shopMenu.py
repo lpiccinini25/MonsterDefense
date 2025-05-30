@@ -9,6 +9,7 @@ class Purchasable:
         self.hover_color = Color(100, 100, 100)
         self.default_color = Color(200, 100, 200)
         self.text = text
+        self.item = "archer"
         self.clicked = False
 
     def draw(self, screen):
@@ -16,8 +17,8 @@ class Purchasable:
         # Add text rendering here
 
     def is_clicked(self, pos):
-        if self.rect.collidepoint(pos):
-            print("clicked")
+        print("click" + self.item)
+        return True, self.item
 
 class Shop:
     def __init__(self):
@@ -39,4 +40,6 @@ class Shop:
 
                 for event in event_list:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        purchasable.is_clicked(mouse_pos)
+                        return purchasable.is_clicked(mouse_pos)
+        
+        return False, None
