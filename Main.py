@@ -57,6 +57,9 @@ def main():
             place.draw(screen)
 
         for enemy in enemyList:
+            if enemy.currentHealth <= 0:
+                enemyList.remove(enemy)
+                continue
             enemy.draw(screen)
             enemy.move(buildings)
 
@@ -69,7 +72,6 @@ def main():
         shop.drawPurchasables()
 
         pygame.display.update()
-        pygame.display.flip()
 
 # Execute game:
 main()

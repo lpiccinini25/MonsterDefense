@@ -21,6 +21,7 @@ class Tower:
         match self.tower:
             case "ArcherTower":
                 self.range = 160
+                self.damage = 10
     
     def draw(self, screen):
         screen.blit(self.image, self.image_rect)
@@ -70,6 +71,7 @@ class Tower:
             self.arrow_active = False 
             self.startArrow_pos = [self.pos[0], self.pos[1]]
             self.endArrow_pos = [self.pos[0], self.pos[1]]
+            self.arrow_target.take_damage(self.damage)
             return
 
         dx_inc = dx / distance * self.arrow_speed
