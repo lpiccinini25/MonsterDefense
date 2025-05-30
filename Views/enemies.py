@@ -2,14 +2,14 @@ import pygame
 import random
 
 class Enemy:
-    def __init__(self, scaling):
-        self.pos = (150, 150)
+    def __init__(self, scaling, pos):
+        self.pos = pos
         self.image = pygame.image.load("assets/Ghoul.png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image_rect = self.image.get_rect(center=self.pos)
         self.image = pygame.transform.scale(self.image, (25, 25))
         self.totalHealth = random.randint(40, 40+scaling*40)
-        self.currentHealth = 40
+        self.currentHealth = self.totalHealth
         self.speed = random.randint(1, 1+scaling*1)
         self.damage = random.randint(10, 10+scaling)
         self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)

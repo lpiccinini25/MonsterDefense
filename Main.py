@@ -6,6 +6,7 @@ from Views.placingItem import placeItem
 from Views.townHall import TownHall
 from globals import screen
 from Views.enemies import Enemy
+from random import randint
 
 from pygame.locals import *
 clock = pygame.time.Clock()
@@ -20,7 +21,10 @@ def main():
    pygame.display.update()
 
    enemyList = []
-   enemyList.append(Enemy(0))
+   defaultEnemySpawnCoolDown = 120
+   enemySpawnCoolDown = 120
+   totalEnemiesSpawned = 0
+   enemySpawnRange = 400
 
    townHall = TownHall()
    buildings.append(townHall)
@@ -56,12 +60,36 @@ def main():
             placing = place.update(towerList)
             place.draw(screen)
 
+
+
+        #Enemy Stuff
+
+        if enemySpawnCoolDown == 0:
+            distance = 0
+            while distance < enemySpawnRange:
+                spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
+
+                dx = townHall.pos[0] - spawn_pos[0]
+                dy = townHall.pos[1] - spawn_pos[1]
+
+                distance = (dx**2+dy**2)**0.5
+
+                if distance >= enemySpawnRange:
+                    enemyList.append(Enemy(totalEnemiesSpawned, spawn_pos))
+                    totalEnemiesSpawned += 1
+
+                enemySpawnCoolDown = defaultEnemySpawnCoolDown
+        else:
+            enemySpawnCoolDown -= 1
+
         for enemy in enemyList:
             if enemy.currentHealth <= 0:
                 enemyList.remove(enemy)
                 continue
             enemy.draw(screen)
             enemy.move(buildings)
+
+        #Tower Stuff
 
         for towerUnit in towerList:
             towerUnit.draw(screen)
