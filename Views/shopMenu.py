@@ -3,13 +3,13 @@ from pygame import Color
 from globals import screen
 
 class Purchasable:
-    def __init__(self, x, y, text):
+    def __init__(self, x, y, text, item):
         self.rect = pygame.Rect(x, y, 100, 50)
         self.curr_color = Color(200, 100, 200)
         self.hover_color = Color(100, 100, 100)
         self.default_color = Color(200, 100, 200)
         self.text = text
-        self.item = "archer"
+        self.item = item
         self.clicked = False
 
     def draw(self, screen):
@@ -23,7 +23,7 @@ class Purchasable:
 class Shop:
     def __init__(self):
         self.purchasables = [
-            Purchasable(50, 50, "banana")
+            Purchasable(50, 50, "banana", "ArcherTower")
         ]
 
     def drawPurchasables(self):

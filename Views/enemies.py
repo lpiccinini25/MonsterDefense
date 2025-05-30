@@ -4,7 +4,8 @@ import random
 class Enemy:
     def __init__(self, scaling):
         self.pos = (150, 150)
-        self.image = pygame.image.load("assets/Ghoul.png").convert_alpha()
+        self.image = pygame.image.load("assets/Ghoul.png").convert()
+        self.image.set_colorkey((0, 0, 0))
         self.image_rect = self.image.get_rect(center=self.pos)
         self.image = pygame.transform.scale(self.image, (25, 25))
         self.totalHealth = random.randint(40, 40+scaling*40)

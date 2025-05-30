@@ -56,8 +56,8 @@ def main():
             placing = place.update(towerList)
             place.draw(screen)
 
-        for tower in towerList:
-            tower.draw(screen)
+        for towerUnit in towerList:
+            towerUnit.draw(screen)
 
         shop.drawPurchasables()
 
