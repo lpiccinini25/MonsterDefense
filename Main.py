@@ -19,8 +19,8 @@ def main():
    buildings = []
    pygame.display.update()
 
-   enemies = []
-   enemies.append(Enemy(0))
+   enemyList = []
+   enemyList.append(Enemy(0))
 
    townHall = TownHall()
    buildings.append(townHall)
@@ -56,16 +56,20 @@ def main():
             placing = place.update(towerList)
             place.draw(screen)
 
-        for towerUnit in towerList:
-            towerUnit.draw(screen)
-
-        shop.drawPurchasables()
-
-        for enemy in enemies:
+        for enemy in enemyList:
             enemy.draw(screen)
             enemy.move(buildings)
 
+        for towerUnit in towerList:
+            towerUnit.draw(screen)
+            towerUnit.update()
+            if towerUnit.attack_cooldown == 0:
+                towerUnit.shootEnemy(enemyList)
+
+        shop.drawPurchasables()
+
         pygame.display.update()
+        pygame.display.flip()
 
 # Execute game:
 main()
