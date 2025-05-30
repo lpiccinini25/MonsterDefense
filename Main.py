@@ -3,6 +3,7 @@
 import pygame
 from Views.shopMenu import Shop
 from Views.placingItem import placeItem
+from Views.townHall import TownHall
 from globals import screen
 
 from pygame.locals import *
@@ -16,6 +17,7 @@ def main():
    towerList = []
    pygame.display.update()
 
+   townHall = TownHall()
 
    while True:
         screen.fill((0, 0, 0))
@@ -34,6 +36,8 @@ def main():
                # can access properties with
                # proper notation(ex: event.y)
         clock.tick(60)
+
+        townHall.draw(screen)
 
         placingTower, towerNow = shop.updatePurchasables(event_list)
 
