@@ -5,6 +5,7 @@ from Views.shopMenu import Shop
 from Views.placingItem import placeItem
 from Views.townHall import TownHall
 from globals import screen
+from Views.enemies import Enemy
 
 from pygame.locals import *
 clock = pygame.time.Clock()
@@ -15,9 +16,14 @@ def main():
    tower = ""
 
    towerList = []
+   buildings = []
    pygame.display.update()
 
+   enemies = []
+   enemies.append(Enemy(0))
+
    townHall = TownHall()
+   buildings.append(townHall)
 
    while True:
         screen.fill((0, 0, 0))
@@ -54,6 +60,10 @@ def main():
             tower.draw(screen)
 
         shop.drawPurchasables()
+
+        for enemy in enemies:
+            enemy.draw(screen)
+            enemy.move(buildings)
 
         pygame.display.update()
 
