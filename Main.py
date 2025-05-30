@@ -1,7 +1,7 @@
 
 # Taken from husano896's PR thread (slightly modified)
 import pygame
-from shopMenu import Purchasable
+from shopMenu import Shop
 from globals import screen
 
 from pygame.locals import *
@@ -9,11 +9,14 @@ clock = pygame.time.Clock()
 
 def main():
 
-   item = Purchasable(100, 100, Color(244, 200, 100), "banana")
-   item.draw(screen)
    pygame.display.update()
+
+
    while True:
-      for event in pygame.event.get():
+        shop = Shop()
+
+        event_list = pygame.event.get()
+        for event in event_list:
             if event.type == QUIT:
                pygame.quit()
                return
@@ -24,7 +27,13 @@ def main():
                print(event.which)
                # can access properties with
                # proper notation(ex: event.y)
-      clock.tick(60)
+        clock.tick(60)
+
+        shop.updatePurchasables(event_list)
+
+        shop.drawPurchasables()
+
+        pygame.display.update()
 
 # Execute game:
 main()
