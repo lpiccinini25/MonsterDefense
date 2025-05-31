@@ -38,7 +38,7 @@ class UpgradeShop:
         for upgrade in self.upgrades:
             upgrade.draw()
 
-    def updateUpgrades(self, event_list):
+    def updateUpgrades(self, event_list, gold):
         mouse_pos = pygame.mouse.get_pos()
 
         for upgrade in self.upgrades:
@@ -47,5 +47,10 @@ class UpgradeShop:
 
                 for event in event_list:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel)
+                        if gold >= 4:
+                            gold -= 4
+                            self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel)
+                            return gold
+        
+        return gold
                         

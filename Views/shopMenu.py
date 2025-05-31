@@ -1,21 +1,28 @@
 import pygame
 from pygame import Color
 from globals import screen
+import functions
+
+from fonts import font
 
 class Purchasable:
     def __init__(self, x, y, text, item, cost):
-        self.rect = pygame.Rect(x, y, 100, 50)
+        self.x = x
+        self.y = y
+        self.rect = pygame.Rect(self.x, self.y, 100, 50)
         self.curr_color = Color(200, 100, 200)
         self.hover_color = Color(100, 100, 100)
         self.default_color = Color(200, 100, 200)
+        self.text_color = Color(255, 255, 255)
         self.text = text
         self.item = item
         self.cost = cost
         self.clicked = False
 
     def draw(self, screen):
+        self.rect.center = (self.x, self.y)
         pygame.draw.rect(screen, self.curr_color, self.rect)
-        # Add text rendering here
+        functions.display_text(self.text + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
 
     def is_clicked(self, pos):
         print("click" + self.item)
@@ -23,8 +30,13 @@ class Purchasable:
 
 class Shop:
     def __init__(self):
+
+        inc = 60
+        base = 75
+        y = 50
         self.purchasables = [
-            Purchasable(50, 50, "banana", "ArcherTower", 2)
+            Purchasable(base, y, "Archer Tower", "ArcherTower", 2),
+            Purchasable(base, y+inc, "House", "House", 2)
         ]
 
     def drawPurchasables(self):

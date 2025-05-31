@@ -21,8 +21,8 @@ def main():
    tower = ""
 
    #Player
-   gold = 10
    towerList = []
+   gold = 10
    buildings = []
    townHall = TownHall()
    buildings.append(townHall)
@@ -55,21 +55,30 @@ def main():
                # proper notation(ex: event.y)
         clock.tick(60)
 
-        townHall.draw(screen)
+        #Building Stuff
+
+        for building in buildings:
+            if building.currentHealth <= 0:
+                if building.title == "House":
+                    buildings.remove(building)
+                    continue
+            if building.update():
+                gold += 1
+
 
         #Placing Towers
 
-        placingTower, towerNow, cost = shop.updatePurchasables(event_list, gold)
+        placingTower, towerNameNow, costInstant = shop.updatePurchasables(event_list, gold)
 
         if placing:
-            place = placeItem(tower)
-            placing, gold = place.update(towerList, gold, placingCost, event_list)
+            place = placeItem(towerNamePlacing)
+            placing, gold = place.update(towerList, buildings, gold, placingCost, event_list)
             place.draw(screen)
 
         if placingTower:
             placing = True
-            tower = towerNow
-            placingCost = cost
+            towerNamePlacing = towerNameNow
+            placingCost = costInstant
     
         shop.drawPurchasables()
 
@@ -130,7 +139,7 @@ def main():
         if towerUpgrading:
             upgradeShop = UpgradeShop(towerInstanceUpgrading)
             upgradeShop.drawShop()
-            upgradeShop.updateUpgrades(event_list)
+            gold = upgradeShop.updateUpgrades(event_list, gold)
 
             if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
                 towerUpgrading = False

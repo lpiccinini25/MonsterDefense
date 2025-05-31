@@ -3,14 +3,19 @@ import pygame
 
 class TownHall:
     def __init__(self):
+        self.title = "TownHall"
         self.pos = (screen.get_width()/2, screen.get_height()/2)
         self.image = pygame.image.load("assets/TownHall.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (75, 75))
         self.image_rect = self.image.get_rect(center=self.pos)
         self.totalHealth = 1000
         self.currentHealth = self.totalHealth
+
+    def update(self):
+        self.draw()
+        return False
     
-    def draw(self, screen):
+    def draw(self):
         screen.blit(self.image, self.image_rect)
         healthBar = pygame.Rect(0, 0, 50, 2)
         healthBar.center = ((self.pos[0], self.pos[1]+22))

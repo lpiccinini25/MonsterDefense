@@ -1,6 +1,7 @@
 import pygame
 from pygame import Color
 from Views.tower import Tower
+from Views.house import House
 
 class placeItem:
     def __init__(self, tower):
@@ -19,12 +20,11 @@ class placeItem:
         screen.blit(self.image, self.image_rect)
         # Add text rendering here
 
-    def update(self, towerList, gold, cost, event_list):
+    def update(self, towerList, buildingList, gold, cost, event_list):
 
-        event_list = pygame.event.get()
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                self.placeTower(self.pos, towerList)
+                self.placeTower(self.pos, towerList, buildingList)
                 gold -= cost
                 return False, gold
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 2:
@@ -32,6 +32,10 @@ class placeItem:
         
         return True, gold
 
-    def placeTower(self, pos, towerList):
-        towerList.append(Tower(self.tower, pos))
+    def placeTower(self, pos, towerList, buildingList):
+        match self.tower:
+            case "House":
+                buildingList.append(House(self.pos))
+            case _:
+                towerList.append(Tower(self.tower, pos))
         

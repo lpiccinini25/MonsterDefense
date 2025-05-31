@@ -1,3 +1,3 @@
 import pygame
 
-font = pygame.font.SysFont(None, 36)
+font = pygame.font.SysFont(None, 15)
