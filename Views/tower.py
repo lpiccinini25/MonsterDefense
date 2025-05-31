@@ -1,16 +1,27 @@
 import pygame
 from pygame import Color
 from globals import screen
+import functions
+
+from assetsHovered import hover_ArcherTower
 
 class Tower:
     def __init__(self, tower, pos):
         self.tower = tower
         self.pos = pos
+
         self.image = pygame.image.load("assets/"+tower+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
-        self.curr_color = Color(200, 100, 200)
+
+        match self.tower:
+            case "ArcherTower": 
+                self.hover = hover_ArcherTower
+                self.hover = pygame.transform.scale(self.hover, (40, 40))
+                self.hover_rect = self.hover.get_rect(center=self.pos)
+
+
         self.attack_cooldown = 120
         self.attack_cooldown_default = 120
         self.arrow_active = False
@@ -18,19 +29,29 @@ class Tower:
         self.endArrow_pos = [self.pos[0], self.pos[1]]
         self.arrow_target = None
         self.arrow_speed = 5
+
         match self.tower:
             case "ArcherTower":
                 self.range = 200
                 self.damage = 10
     
     def draw(self, screen):
-        screen.blit(self.image, self.image_rect)
+        mouse_pos = pygame.mouse.get_pos()
+        if self.image_rect.collidepoint(mouse_pos):
+            screen.blit(self.hover, self.hover_rect)
+            print(self.hover)
+        else:
+            screen.blit(self.image, self.image_rect)
     
-    def update(self):
+    def update(self, event_list) -> bool:
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
         
         self.updateArrow(screen)
+
+        if functions.is_clicked_on(self.image_rect, event_list):
+            return True
+
 
     def shootEnemy(self, enemyList):
         minDistance = self.range

@@ -1,5 +1,7 @@
 
 # Taken from husano896's PR thread (slightly modified)
+import functions
+
 import pygame
 from Views.shopMenu import Shop
 from Views.placingItem import placeItem
@@ -7,6 +9,9 @@ from Views.townHall import TownHall
 from globals import screen
 from Views.enemies import Enemy
 from random import randint
+from fonts import font
+
+from Views.upgradeShop import UpgradeShop
 
 from pygame.locals import *
 clock = pygame.time.Clock()
@@ -14,6 +19,7 @@ clock = pygame.time.Clock()
 def main():
 
    placing = False
+   towerUpgrading = False
    tower = ""
 
    #Player
@@ -22,7 +28,7 @@ def main():
    buildings = []
    townHall = TownHall()
    buildings.append(townHall)
-   player_click_damage = 10
+   player_click_damage = 5
 
 
    #Enemies
@@ -31,9 +37,6 @@ def main():
    enemySpawnCoolDown = 120
    totalEnemiesSpawned = 0
    enemySpawnRange = 400
-
-   #Font
-   font = pygame.font.SysFont(None, 36)
 
 
    while True:
@@ -70,6 +73,7 @@ def main():
             tower = towerNow
             placingCost = cost
     
+        shop.drawPurchasables()
 
         #Player Stuff
         """
@@ -115,11 +119,23 @@ def main():
 
         for towerUnit in towerList:
             towerUnit.draw(screen)
-            towerUnit.update()
+            if towerUnit.update(event_list):
+                towerUpgrading = True
+                towerInstanceUpgrading = towerUnit
+                towerUpgradingName = towerUnit.tower
+
             if towerUnit.attack_cooldown == 0:
                 towerUnit.shootEnemy(enemyList)
+        
+        #Tower Upgrading
 
-        shop.drawPurchasables()
+        if towerUpgrading:
+            upgradeShop = UpgradeShop(towerInstanceUpgrading)
+            upgradeShop.drawShop()
+
+            if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
+                towerUpgrading = False
+
 
         pygame.display.update()
 
