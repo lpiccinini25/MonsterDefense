@@ -20,7 +20,7 @@ class Tower:
         self.arrow_speed = 5
         match self.tower:
             case "ArcherTower":
-                self.range = 160
+                self.range = 200
                 self.damage = 10
     
     def draw(self, screen):

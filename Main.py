@@ -16,18 +16,25 @@ def main():
    placing = False
    tower = ""
 
+   #Player
+   gold = 10
    towerList = []
    buildings = []
-   pygame.display.update()
+   townHall = TownHall()
+   buildings.append(townHall)
+   player_click_damage = 10
 
+
+   #Enemies
    enemyList = []
    defaultEnemySpawnCoolDown = 120
    enemySpawnCoolDown = 120
    totalEnemiesSpawned = 0
    enemySpawnRange = 400
 
-   townHall = TownHall()
-   buildings.append(townHall)
+   #Font
+   font = pygame.font.SysFont(None, 36)
+
 
    while True:
         screen.fill((0, 0, 0))
@@ -49,18 +56,30 @@ def main():
 
         townHall.draw(screen)
 
-        placingTower, towerNow = shop.updatePurchasables(event_list)
+        #Placing Towers
+
+        placingTower, towerNow, cost = shop.updatePurchasables(event_list, gold)
+
+        if placing:
+            place = placeItem(tower)
+            placing, gold = place.update(towerList, gold, placingCost, event_list)
+            place.draw(screen)
 
         if placingTower:
             placing = True
             tower = towerNow
-        
-        if placing:
-            place = placeItem(tower)
-            placing = place.update(towerList)
-            place.draw(screen)
+            placingCost = cost
+    
 
-
+        #Player Stuff
+        """
+        goldBox = pygame.Rect(0, 0, 100, 50)
+        goldBox.get_rect(center=(800, 650))
+        pygame.draw.rect(screen, self.curr_color, goldBox)
+        """
+        text_surface = font.render("Gold: "+str(gold), True, (255, 215, 0))
+        text_rect = text_surface.get_rect(center=(800, 650))
+        screen.blit(text_surface, text_rect)
 
         #Enemy Stuff
 
@@ -75,7 +94,7 @@ def main():
                 distance = (dx**2+dy**2)**0.5
 
                 if distance >= enemySpawnRange:
-                    enemyList.append(Enemy(totalEnemiesSpawned, spawn_pos))
+                    enemyList.append(Enemy(int(totalEnemiesSpawned/4), spawn_pos))
                     totalEnemiesSpawned += 1
 
                 enemySpawnCoolDown = defaultEnemySpawnCoolDown
@@ -85,9 +104,12 @@ def main():
         for enemy in enemyList:
             if enemy.currentHealth <= 0:
                 enemyList.remove(enemy)
+                randomNum = randint(0, 100)
+                if randomNum < 31:
+                    gold += 1
                 continue
+            enemy.update(buildings, player_click_damage, event_list)
             enemy.draw(screen)
-            enemy.move(buildings)
 
         #Tower Stuff
 

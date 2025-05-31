@@ -13,24 +13,24 @@ class placeItem:
         self.curr_color = Color(200, 100, 200)
         self.hover_color = Color(100, 100, 100)
         self.default_color = Color(200, 100, 200)
-        self.tower = tower
         self.clicked = False
 
     def draw(self, screen):
         screen.blit(self.image, self.image_rect)
         # Add text rendering here
 
-    def update(self, towerList):
-        event_list = pygame.event.get()
+    def update(self, towerList, gold, cost, event_list):
 
+        event_list = pygame.event.get()
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self.placeTower(self.pos, towerList)
-                return False
+                gold -= cost
+                return False, gold
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 2:
-                return False
+                return False, gold
         
-        return True
+        return True, gold
 
     def placeTower(self, pos, towerList):
         towerList.append(Tower(self.tower, pos))
