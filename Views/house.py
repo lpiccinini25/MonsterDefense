@@ -10,7 +10,7 @@ class House:
         self.image_rect = self.image.get_rect(center=self.pos)
         self.totalHealth = 100
         self.currentHealth = self.totalHealth
-        self.defaultGoldGenerationCoolDown = 400
+        self.defaultGoldGenerationCoolDown = 800
         self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
 
     def update(self):

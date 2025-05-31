@@ -31,10 +31,19 @@ def main():
 
    #Enemies
    enemyList = []
-   defaultEnemySpawnCoolDown = 120
-   enemySpawnCoolDown = 120
    totalEnemiesSpawned = 0
    enemySpawnRange = 400
+
+   #Enemies -- Wave Mechanic
+   baseLowWaveCD = 3000
+   LowWaveCD = baseLowWaveCD
+   baseLowEnemySpawnCD = 150
+
+   baseHighWaveCD = 1000
+   HighWaveCD = baseHighWaveCD
+   baseHighEnemySpawnCD = 40
+
+   enemySpawnCoolDown = baseLowEnemySpawnCD
 
 
    while True:
@@ -82,35 +91,74 @@ def main():
     
         shop.drawPurchasables()
 
-        #Player Stuff
+        #Player Stuff/Important Info Displaying
         """
         goldBox = pygame.Rect(0, 0, 100, 50)
         goldBox.get_rect(center=(800, 650))
         pygame.draw.rect(screen, self.curr_color, goldBox)
+
+
+        display_text(text, color, font, x, y)
         """
         text_surface = font.render("Gold: "+str(gold), True, (255, 215, 0))
         text_rect = text_surface.get_rect(center=(800, 650))
         screen.blit(text_surface, text_rect)
 
-        #Enemy Stuff
-
-        if enemySpawnCoolDown == 0:
-            distance = 0
-            while distance < enemySpawnRange:
-                spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
-
-                dx = townHall.pos[0] - spawn_pos[0]
-                dy = townHall.pos[1] - spawn_pos[1]
-
-                distance = (dx**2+dy**2)**0.5
-
-                if distance >= enemySpawnRange:
-                    enemyList.append(Enemy(int(totalEnemiesSpawned/4), spawn_pos))
-                    totalEnemiesSpawned += 1
-
-                enemySpawnCoolDown = defaultEnemySpawnCoolDown
+        if LowWaveCD == 0:
+            currentWave = "High Enemy Spawn Period"
         else:
-            enemySpawnCoolDown -= 1
+            currentWave = "Low Enemy Spawn Period"
+
+        functions.display_text(currentWave, (255, 255, 255), font, 750, 50)
+
+        #Enemy Spawning
+
+        if LowWaveCD != 0:
+            if enemySpawnCoolDown == 0:
+                distance = 0
+                while distance < enemySpawnRange:
+                    spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
+
+                    dx = townHall.pos[0] - spawn_pos[0]
+                    dy = townHall.pos[1] - spawn_pos[1]
+
+                    distance = (dx**2+dy**2)**0.5
+
+                    if distance >= enemySpawnRange:
+                        enemyList.append(Enemy(int(totalEnemiesSpawned/4), spawn_pos))
+                        totalEnemiesSpawned += 1
+
+                    enemySpawnCoolDown = baseLowEnemySpawnCD
+                    LowWaveCD -= 1
+                    print(LowWaveCD)
+            else:
+                enemySpawnCoolDown -= 1
+                LowWaveCD -= 1
+        elif HighWaveCD != 0:
+            if enemySpawnCoolDown == 0:
+                distance = 0
+                while distance < enemySpawnRange:
+                    spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
+
+                    dx = townHall.pos[0] - spawn_pos[0]
+                    dy = townHall.pos[1] - spawn_pos[1]
+
+                    distance = (dx**2+dy**2)**0.5
+
+                    if distance >= enemySpawnRange:
+                        enemyList.append(Enemy(int(totalEnemiesSpawned/4), spawn_pos))
+                        totalEnemiesSpawned += 1
+
+                    HighWaveCD -= 1
+                    enemySpawnCoolDown = baseHighEnemySpawnCD
+            else:
+                HighWaveCD -= 1
+                enemySpawnCoolDown -= 1
+        else:
+            LowWaveCD = baseLowWaveCD
+            HighWaveCD = baseHighWaveCD
+    
+        #Enemy Updating
 
         for enemy in enemyList:
             if enemy.currentHealth <= 0:
