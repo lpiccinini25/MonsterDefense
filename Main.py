@@ -1,5 +1,3 @@
-
-# Taken from husano896's PR thread (slightly modified)
 import functions
 
 import pygame
