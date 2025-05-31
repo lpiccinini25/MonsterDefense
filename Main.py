@@ -130,6 +130,7 @@ def main():
         if towerUpgrading:
             upgradeShop = UpgradeShop(towerInstanceUpgrading)
             upgradeShop.drawShop()
+            upgradeShop.updateUpgrades(event_list)
 
             if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
                 towerUpgrading = False

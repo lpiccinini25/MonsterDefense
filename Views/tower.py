@@ -107,3 +107,11 @@ class Tower:
         purple = Color(157, 93, 206)
         pygame.draw.line(screen, purple, self.startArrow_pos, self.endArrow_pos, 1)
     
+    def upgradeTower(self, newImage, towerModel):
+        self.range = towerModel.range
+        self.damage = towerModel.damage
+        self.default_attack_cooldown = towerModel.default_attack_cooldown
+        self.image = pygame.image.load(newImage).convert()
+        self.image.set_colorkey((0, 0, 0))
+        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image_rect = self.image.get_rect(center=self.pos)
