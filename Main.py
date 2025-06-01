@@ -170,7 +170,7 @@ class Main:
                         LowWaveCD -= 1
                 else:
                     enemySpawnCoolDown -= 1
-                    LowWaveCD -= 4
+                    LowWaveCD -= 1
             elif HighWaveCD >= 0:
                 if enemySpawnCoolDown == 0:
                     distance = 0
