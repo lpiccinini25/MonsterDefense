@@ -28,11 +28,13 @@ class UpgradeShop:
     def __init__(self, towerInstance):
         self.towerInstance = towerInstance
 
-        match self.towerInstance.tower:
+        match self.towerInstance.tower_name:
             case "ArcherTower":
                 self.upgrades = [
                     Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4)
                 ]
+            case _:
+                self.upgrades = []
 
     def drawShop(self):
         for upgrade in self.upgrades:

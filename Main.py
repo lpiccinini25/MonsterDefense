@@ -201,11 +201,10 @@ class Main:
             #Tower Stuff
 
             for towerUnit in towerList:
-                towerUnit.draw(screen)
-                if towerUnit.update(event_list):
+                if towerUnit.update(event_list, enemyList):
                     towerUpgrading = True
                     towerInstanceUpgrading = towerUnit
-                    towerUpgradingName = towerUnit.tower
+                    towerUpgradingName = towerUnit.tower_name
 
                 if towerUnit.attack_cooldown == 0:
                     towerUnit.shootEnemy(enemyList)

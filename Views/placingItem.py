@@ -1,6 +1,6 @@
 import pygame
 from pygame import Color
-from Views.tower import Tower
+from Views.tower import ArcherTower, BombTower
 from Views.house import House
 
 class placeItem:
@@ -36,6 +36,8 @@ class placeItem:
         match self.tower:
             case "House":
                 buildingList.append(House(self.pos))
-            case _:
-                towerList.append(Tower(self.tower, pos))
+            case "ArcherTower":
+                towerList.append(ArcherTower(self.tower, pos))
+            case "BombTower":
+                towerList.append(BombTower(self.tower, pos))
         

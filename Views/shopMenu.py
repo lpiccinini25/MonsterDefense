@@ -36,7 +36,8 @@ class Shop:
         y = 50
         self.purchasables = [
             Purchasable(base, y, "Archer Tower", "ArcherTower", 2),
-            Purchasable(base, y+inc, "House", "House", 2)
+            Purchasable(base, y+inc, "House", "House", 2),
+            Purchasable(base, y+inc*2, "Bomb Tower", "BombTower", 6)
         ]
 
     def drawPurchasables(self):

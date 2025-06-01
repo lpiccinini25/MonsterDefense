@@ -7,7 +7,7 @@ class House:
         self.pos = pos
 
         self.broken = False
-        self.base_repair_time = 1200
+        self.base_repair_time = 1400
         self.repair_time = self.base_repair_time
 
         self.house_image = pygame.image.load("assets/House.png")
@@ -22,7 +22,7 @@ class House:
 
         self.totalHealth = 100
         self.currentHealth = self.totalHealth
-        self.defaultGoldGenerationCoolDown = 800
+        self.defaultGoldGenerationCoolDown = 700
         self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
 
     def update(self):
