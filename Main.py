@@ -5,7 +5,7 @@ from Views.shopMenu import Shop
 from Views.placingItem import placeItem
 from Views.townHall import TownHall
 from globals import screen
-from Views.enemies import Enemy
+from Views.enemies import Ghoul, Golem
 from random import randint
 from fonts import font
 
@@ -57,7 +57,7 @@ class Main:
         #Enemies
         enemyList = []
         totalEnemiesSpawned = 0
-        enemySpawnRange = 400
+        enemySpawnRange = 300
 
         #Enemies -- Wave Mechanic
         baseLowWaveCD = 3000
@@ -66,7 +66,18 @@ class Main:
 
         baseHighWaveCD = 1000
         HighWaveCD = baseHighWaveCD
-        baseHighEnemySpawnCD = 40
+        baseHighEnemySpawnCD = 60
+
+        waveNumber = 1
+
+        #Enemies -- Spawn Area
+        screen_h = screen.get_height()
+        screen_w = screen.get_width()
+
+        spawn_zone_x = int(screen.get_width()*2/5)
+        spawn_zone_y = 0
+        spawn_zone_w = 150
+        spawn_zone_h = 150
 
         enemySpawnCoolDown = baseLowEnemySpawnCD
 
@@ -119,15 +130,10 @@ class Main:
 
             #Player Stuff/Important Info Displaying
             """
-            goldBox = pygame.Rect(0, 0, 100, 50)
-            goldBox.get_rect(center=(800, 650))
-            pygame.draw.rect(screen, self.curr_color, goldBox)
-
-
             display_text(text, color, font, x, y)
             """
             text_surface = font.render("Gold: "+str(gold), True, (255, 215, 0))
-            text_rect = text_surface.get_rect(center=(800, 650))
+            text_rect = text_surface.get_rect(center=(700, screen.get_height()-50))
             screen.blit(text_surface, text_rect)
 
             if LowWaveCD == 0:
@@ -137,11 +143,15 @@ class Main:
                 waveSecondsLeft = int(LowWaveCD/60)
                 currentWave = "Low Enemy Spawn Period: " + str(waveSecondsLeft) +" till change."
 
-            functions.display_text(currentWave, (255, 255, 255), font, 700, 50)
+            functions.display_text(currentWave, (255, 255, 255), font, 700, screen.get_height()-75)
+
+            functions.display_text("Wave Number: "+str(waveNumber), (255, 255, 255), font, 700, screen.get_height()-100)
+
+            functions.display_image("Tombstone", spawn_zone_x+int(spawn_zone_w/2), spawn_zone_y+int(spawn_zone_h/2), 35)
 
             #Enemy Spawning
 
-            if LowWaveCD != 0:
+            if LowWaveCD >= 0:
                 if enemySpawnCoolDown == 0:
                     distance = 0
                     while distance < enemySpawnRange:
@@ -153,28 +163,33 @@ class Main:
                         distance = (dx**2+dy**2)**0.5
 
                         if distance >= enemySpawnRange:
-                            enemyList.append(Enemy(int(totalEnemiesSpawned/4), spawn_pos))
+                            enemyList.append(Ghoul("Ghoul", waveNumber, spawn_pos))
                             totalEnemiesSpawned += 1
 
                         enemySpawnCoolDown = baseLowEnemySpawnCD
                         LowWaveCD -= 1
-                        print(LowWaveCD)
                 else:
                     enemySpawnCoolDown -= 1
-                    LowWaveCD -= 1
-            elif HighWaveCD != 0:
+                    LowWaveCD -= 4
+            elif HighWaveCD >= 0:
                 if enemySpawnCoolDown == 0:
                     distance = 0
                     while distance < enemySpawnRange:
-                        spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
-
+                        spawn_pos = (randint(spawn_zone_x, spawn_zone_x+spawn_zone_w), randint(spawn_zone_y, spawn_zone_y+spawn_zone_h))
+                        print("pos:" + str(spawn_pos[1]), str(spawn_pos[0]))
                         dx = townHall.pos[0] - spawn_pos[0]
                         dy = townHall.pos[1] - spawn_pos[1]
 
                         distance = (dx**2+dy**2)**0.5
 
+                        print("dis:" + str(distance))
+
                         if distance >= enemySpawnRange:
-                            enemyList.append(Enemy(int(totalEnemiesSpawned/4), spawn_pos))
+                            randNum = randint(1, 10)
+                            if randNum > 9:
+                                enemyList.append(Golem("Golem",waveNumber, spawn_pos))
+                            else:
+                                enemyList.append(Ghoul("Ghoul",waveNumber, spawn_pos))
                             totalEnemiesSpawned += 1
 
                         HighWaveCD -= 1
@@ -183,11 +198,18 @@ class Main:
                     HighWaveCD -= 1
                     enemySpawnCoolDown -= 1
             else:
+                if waveNumber % 2 == 0:
+                    spawn_zone_x = int(screen.get_width()*randint(0, 4)/5)
+                    spawn_zone_y = 0
+                else:
+                    spawn_zone_x = 0
+                    spawn_zone_y = int(screen.get_height()*randint(0, 4)/5)
+                waveNumber += 1
                 LowWaveCD = baseLowWaveCD
                 HighWaveCD = baseHighWaveCD
         
             #Enemy Updating
-
+            #print("amount of enemies"+str(len(enemyList)))
             for enemy in enemyList:
                 if enemy.currentHealth <= 0:
                     enemyList.remove(enemy)
