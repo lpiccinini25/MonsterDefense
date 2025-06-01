@@ -84,8 +84,3 @@ class Enemy:
     
     def attack(self, building):
         building.take_damage(self.damage)
-
-
-
-
-
