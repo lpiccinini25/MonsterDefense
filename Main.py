@@ -95,10 +95,7 @@ class Main:
 
             for building in buildings:
                 if building.currentHealth <= 0:
-                    if building.title == "House":
-                        buildings.remove(building)
-                        continue
-                    elif building.title == "TownHall":
+                    if building.title == "TownHall":
                         run_game = False
                 if building.update():
                     gold += 1

@@ -3,6 +3,7 @@ import pygame
 
 class TownHall:
     def __init__(self):
+        self.broken = False
         self.title = "TownHall"
         self.pos = (screen.get_width()/2, screen.get_height()/2)
         self.image = pygame.image.load("assets/TownHall.png").convert_alpha()

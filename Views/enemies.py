@@ -40,6 +40,8 @@ class Enemy:
         stepDistance = self.speed * 0.2
 
         for building in buildings:
+            if building.broken:
+                continue
             curr_distance = ((building.pos[0]-self.pos[0])**2+(building.pos[1]-self.pos[1])**2)**0.5
             if curr_distance < minDistance:
                 minDistance = curr_distance
