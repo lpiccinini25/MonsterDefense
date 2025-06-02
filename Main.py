@@ -3,7 +3,7 @@ import functions
 import pygame
 from Views.shopMenu import Shop
 from Views.placingItem import placeItem
-from Views.townHall import TownHall
+from Views.buildings import TownHall
 from globals import screen
 from Views.enemies import Ghoul, Golem
 from random import randint
@@ -55,8 +55,8 @@ class Main:
                 self.building_list = []
                 self.all_purchasables = []
 
-                self.gold = 10
-                self.player_click_damage = 5
+                self.gold = 6
+                self.player_click_damage = 0
                 self.caps = {
                     'ArcherTowerCap' : 4,
                     'HouseCap' : 3,
@@ -68,10 +68,10 @@ class Main:
         
         game_info = GameInfo()
         
-        townHall = TownHall()
+        townHall = TownHall('TownHall', (screen.get_width()/2, screen.get_height()/2))
         game_info.building_list.append(townHall)
         game_info.update()
-        player_click_damage = 5
+        player_click_damage = 0
 
 
         #Enemies
@@ -119,16 +119,6 @@ class Main:
                     # can access properties with
                     # proper notation(ex: event.y)
             clock.tick(60)
-
-            #Building Stuff
-
-            for building in game_info.building_list:
-                if building.currentHealth <= 0:
-                    if building.title == "TownHall":
-                        run_game = False
-                if building.update():
-                    game_info.gold += 1
-
 
             #Placing Towers
 
@@ -228,11 +218,14 @@ class Main:
 
             #Tower Stuff
 
-            for towerUnit in game_info.tower_list:
-                if towerUnit.update(event_list, enemyList):
+            for purchasable in game_info.all_purchasables:
+                if purchasable.currentHealth <= 0:
+                    if purchasable.title == "TownHall":
+                        run_game = False
+                if purchasable.update(game_info, event_list, enemyList):
                     towerUpgrading = True
-                    towerInstanceUpgrading = towerUnit
-                    towerUpgradingName = towerUnit.title
+                    towerInstanceUpgrading = purchasable
+                    towerUpgradingName = purchasable.title
             
             #Tower Upgrading
 
@@ -244,7 +237,7 @@ class Main:
                 if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
                     towerUpgrading = False
             
-                        #Enemy Updating
+            #Enemy Updating
             #print("amount of enemies"+str(len(enemyList)))
             for enemy in enemyList:
                 if enemy.currentHealth <= 0:

@@ -4,3 +4,10 @@ class ArcherTowerLevel2:
         self.range = 275
         self.damage = 30
         self.default_attack_cooldown = 90
+
+class TownHallLevel2:
+    def __init__(self):
+        self.title = "TownHallLevel2"
+        self.ArcherTowerCap = 6
+        self.HouseCap = 5
+        self.BombTowerCap = 2

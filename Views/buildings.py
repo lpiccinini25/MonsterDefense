@@ -1,4 +1,5 @@
 from globals import screen
+import functions
 import pygame
 
 class building:
@@ -37,14 +38,14 @@ class House(building):
         self.defaultGoldGenerationCoolDown = 700
         self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
 
-    def update(self):
+    def update(self, game_info, event_list, enemyList):
 
         self.draw()
 
         if not self.broken:
             if self.goldGenerationCoolDown == 0:
                 self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
-                return True
+                game_info.gold += 1
             else:
                 self.goldGenerationCoolDown -= 1
         elif self.repair_time != 0:
@@ -54,6 +55,8 @@ class House(building):
             self.broken = False
             self.currentHealth = self.totalHealth
         
+        if functions.is_clicked_on(self.image_rect, event_list):
+            return True
         return False
         
     def draw(self):
@@ -77,19 +80,23 @@ class House(building):
             pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
 
 class TownHall(building):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, title, pos):
+        super().__init__(title, pos)
         self.broken = False
-        self.building_name = "TownHall"
+        self.title = "TownHall"
         self.pos = (screen.get_width()/2, screen.get_height()/2)
-        self.image = pygame.image.load("assets/TownHall.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (75, 75))
+
+        image_size = 75
+        self.image = pygame.transform.scale(self.image, (image_size, image_size))
         self.image_rect = self.image.get_rect(center=self.pos)
         self.totalHealth = 1000
         self.currentHealth = self.totalHealth
 
-    def update(self):
+    def update(self, game_info, event_list, enemyList):
         self.draw()
+        
+        if functions.is_clicked_on(self.image_rect, event_list):
+            return True
         return False
     
     def draw(self):
@@ -104,3 +111,14 @@ class TownHall(building):
     
     def take_damage(self, damage_amount):
         self.currentHealth -= damage_amount
+    
+        
+    def upgradeTower(self, newImage, towerModel, game_info):
+        game_info.caps['ArcherTowerCap'] = towerModel.ArcherTowerCap
+        game_info.caps['HouseCap'] = towerModel.HouseCap
+        game_info.caps['BombTowerCap'] = towerModel.BombTowerCap
+
+        self.image = pygame.image.load(newImage).convert()
+        self.image.set_colorkey((0, 0, 0))
+        self.image = pygame.transform.scale(self.image, (75, 75))
+        self.image_rect = self.image.get_rect(center=self.pos)

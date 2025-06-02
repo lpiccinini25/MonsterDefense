@@ -47,7 +47,7 @@ class Tower:
             outline.center = ((self.pos[0], self.pos[1]))
             pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
 
-    def upgradeTower(self, newImage, towerModel):
+    def upgradeTower(self, newImage, towerModel, game_info):
         self.range = towerModel.range
         self.damage = towerModel.damage
         self.default_attack_cooldown = towerModel.default_attack_cooldown
@@ -91,12 +91,12 @@ class ArcherTower(Tower):
         self.arrow_speed = 5
 
         #Archer Tower Stats
-        self.attack_cooldown = 120
-        self.attack_cooldown_default = 120
+        self.attack_cooldown_default = 100
+        self.attack_cooldown = self.attack_cooldown_default
         self.range = 200
-        self.damage = 10
+        self.damage = 15
     
-    def update(self, event_list, enemyList) -> bool:
+    def update(self, game_info, event_list, enemyList) -> bool:
 
         self.draw((168, 96, 216))
 
@@ -109,6 +109,7 @@ class ArcherTower(Tower):
             if self.repair_time == 0:
                 self.broken = False
                 self.currentHealth = self.totalHealth
+                self.repair_time = self.base_repair_time
             else:
                 self.repair_time -= 1
         
@@ -212,7 +213,7 @@ class BombTower(Tower):
         self.totalHealth = 150
         self.currentHealth = self.totalHealth
     
-    def update(self, event_list, enemyList) -> bool:
+    def update(self, game_info, event_list, enemyList) -> bool:
 
         self.draw((61, 64, 67))
 

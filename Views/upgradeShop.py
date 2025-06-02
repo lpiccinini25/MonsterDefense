@@ -4,7 +4,7 @@ from globals import screen
 from fonts import font
 import functions
 
-from towerModels import ArcherTowerLevel2
+from towerModels import ArcherTowerLevel2, TownHallLevel2
 
 class Upgrade:
     def __init__(self, x: int, y: int, upgradeName: str, upgradeModel, cost: int):
@@ -33,6 +33,10 @@ class UpgradeShop:
                 self.upgrades = [
                     Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4)
                 ]
+            case "TownHall": 
+                self.upgrades = [
+                    Upgrade(800, 50, "Level 2", TownHallLevel2(), 10)
+                ]
             case _:
                 self.upgrades = []
 
@@ -49,8 +53,8 @@ class UpgradeShop:
 
                 for event in event_list:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        if game_info.gold >= 4:
-                            game_info.gold -= 4
-                            self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel)
+                        if game_info.gold >= upgrade.cost:
+                            game_info.gold -= upgrade.cost
+                            self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel, game_info)
         
                         
