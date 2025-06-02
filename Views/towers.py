@@ -108,6 +108,7 @@ class ArcherTower(Tower):
         else:
             if self.repair_time == 0:
                 self.broken = False
+                self.currentHealth = self.totalHealth
             else:
                 self.repair_time -= 1
         
@@ -196,13 +197,36 @@ class BombTower(Tower):
         self.range = 100
 
         self.explosion_radius = 10
+
+        #Broken/Repair
+        self.base_repair_time = 1400
+        self.repair_time = self.base_repair_time
+
+        image_size = 30
+
+        self.broken_image = pygame.image.load("assets/BrokenBombTower.png").convert()
+        self.broken_image.set_colorkey((0, 0, 0))
+        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
+        self.broken_image_rect = self.broken_image.get_rect(center=self.pos)
+
+        self.totalHealth = 150
+        self.currentHealth = self.totalHealth
     
     def update(self, event_list, enemyList) -> bool:
 
-        self.draw()
+        self.draw((61, 64, 67))
 
-        if self.attack_cooldown > 0:
-            self.attack_cooldown -= 1
+        if not self.broken:
+            if self.attack_cooldown > 0:
+                self.attack_cooldown -= 1
+            elif not self.arrow_active:
+               self.shootEnemy(enemyList)
+        else:
+            if self.repair_time == 0:
+                self.broken = False
+                self.currentHealth = self.totalHealth
+            else:
+                self.repair_time -= 1
         
         self.updateArrow(enemyList)
 

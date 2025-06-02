@@ -225,18 +225,6 @@ class Main:
                 waveNumber += 1
                 LowWaveCD = baseLowWaveCD
                 HighWaveCD = baseHighWaveCD
-        
-            #Enemy Updating
-            #print("amount of enemies"+str(len(enemyList)))
-            for enemy in enemyList:
-                if enemy.currentHealth <= 0:
-                    enemyList.remove(enemy)
-                    randomNum = randint(0, 100)
-                    if randomNum < 31:
-                        game_info.gold += 1
-                    continue
-                enemy.update(game_info, player_click_damage, event_list)
-                enemy.draw(screen)
 
             #Tower Stuff
 
@@ -245,9 +233,6 @@ class Main:
                     towerUpgrading = True
                     towerInstanceUpgrading = towerUnit
                     towerUpgradingName = towerUnit.title
-
-                if towerUnit.attack_cooldown == 0:
-                    towerUnit.shootEnemy(enemyList)
             
             #Tower Upgrading
 
@@ -258,6 +243,18 @@ class Main:
 
                 if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
                     towerUpgrading = False
+            
+                        #Enemy Updating
+            #print("amount of enemies"+str(len(enemyList)))
+            for enemy in enemyList:
+                if enemy.currentHealth <= 0:
+                    enemyList.remove(enemy)
+                    randomNum = randint(0, 100)
+                    if randomNum < 31:
+                        game_info.gold += 1
+                    continue
+                enemy.update(game_info, player_click_damage, event_list)
+                enemy.draw(screen)
 
 
             pygame.display.update()
