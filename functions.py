@@ -22,8 +22,7 @@ def display_text(text, color, font, x, y):
     text_rect = text_surface.get_rect(center=(x, y))
     screen.blit(text_surface, text_rect)
 
-def display_image(image_name, x, y, scaling):
-    image = pygame.image.load("assets/"+image_name+".png").convert()
+def display_image(image, x, y, scaling):
     image.set_colorkey((0, 0, 0))
     image = pygame.transform.scale(image, (scaling, scaling))
     image_rect = image.get_rect(center=(x, y))

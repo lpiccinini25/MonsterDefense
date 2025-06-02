@@ -18,8 +18,8 @@ class Enemy:
         outline.center = ((self.pos[0], self.pos[1]+13))
         pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
     
-    def update(self, buildings, player_click_damage, event_list):
-        self.moveAndAttack(buildings)
+    def update(self, game_info, player_click_damage, event_list):
+        self.moveAndAttack(game_info.building_list)
         self.on_click(player_click_damage, event_list)
     
     def on_click(self, player_click_damage, event_list):
@@ -60,6 +60,8 @@ class Ghoul(Enemy):
 
         for building in buildings:
             if building.broken:
+                print(game_info.tower_list)
+                print(game_info.building_list)
                 continue
             curr_distance = ((building.pos[0]-self.pos[0])**2+(building.pos[1]-self.pos[1])**2)**0.5
             if curr_distance < minDistance:

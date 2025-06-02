@@ -28,7 +28,7 @@ class UpgradeShop:
     def __init__(self, towerInstance):
         self.towerInstance = towerInstance
 
-        match self.towerInstance.tower_name:
+        match self.towerInstance.title:
             case "ArcherTower":
                 self.upgrades = [
                     Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4)
@@ -40,7 +40,7 @@ class UpgradeShop:
         for upgrade in self.upgrades:
             upgrade.draw()
 
-    def updateUpgrades(self, event_list, gold):
+    def updateUpgrades(self, event_list, game_info):
         mouse_pos = pygame.mouse.get_pos()
 
         for upgrade in self.upgrades:
@@ -49,10 +49,8 @@ class UpgradeShop:
 
                 for event in event_list:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        if gold >= 4:
-                            gold -= 4
+                        if game_info.gold >= 4:
+                            game_info.gold -= 4
                             self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel)
-                            return gold
         
-        return gold
                         

@@ -6,11 +6,11 @@ import functions
 from assetsHovered import hover_ArcherTower
 
 class Tower:
-    def __init__(self, tower_name, pos):
-        self.tower_name = tower_name
+    def __init__(self, title, pos):
+        self.title = title
         self.pos = pos
 
-        self.image = pygame.image.load("assets/"+tower_name+".png").convert()
+        self.image = pygame.image.load("assets/"+title+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
@@ -33,8 +33,8 @@ class Tower:
         self.image_rect = self.image.get_rect(center=self.pos)
 
 class ArcherTower(Tower):
-    def __init__(self, tower, pos):
-        super().__init__(tower, pos)
+    def __init__(self, title, pos):
+        super().__init__(title, pos)
 
         self.hover = hover_ArcherTower
         self.hover = pygame.transform.scale(self.hover, (40, 40))
@@ -122,8 +122,8 @@ class ArcherTower(Tower):
 
 
 class BombTower(Tower):
-    def __init__(self, tower, pos):
-        super().__init__(tower, pos)
+    def __init__(self, title, pos):
+        super().__init__(title, pos)
         self.hover = self.image
         self.hover = pygame.transform.scale(self.hover, (40, 40))
         self.hover_rect = self.hover.get_rect(center=self.pos)

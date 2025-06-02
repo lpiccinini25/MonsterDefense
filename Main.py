@@ -38,6 +38,9 @@ class Main:
 
     def run(self):
 
+        #Images Preloaded
+        tombstone_image = pygame.image.load("assets/Tombstone.png").convert()
+
         clock = pygame.time.Clock()
 
         run_game = True
@@ -46,11 +49,22 @@ class Main:
         tower = ""
 
         #Player
-        towerList = []
-        gold = 10
-        buildings = []
+        class GameInfo:
+            def __init__(self):
+                self.tower_list = []
+                self.gold = 10
+                self.building_list = []
+                self.player_click_damage = 5
+                self.caps = {
+                    'ArcherTowerCap' : 4,
+                    'HouseCap' : 3,
+                    'BombTowerCap' : 1
+                }
+        
+        game_info = GameInfo()
+        
         townHall = TownHall()
-        buildings.append(townHall)
+        game_info.building_list.append(townHall)
         player_click_damage = 5
 
 
@@ -102,23 +116,22 @@ class Main:
 
             #Building Stuff
 
-            end_screen = False
-
-            for building in buildings:
+            print(game_info.building_list)
+            for building in game_info.building_list:
                 if building.currentHealth <= 0:
-                    if building.title == "TownHall":
+                    if building.bulding_name == "TownHall":
                         run_game = False
                 if building.update():
-                    gold += 1
+                    game_info.gold += 1
 
 
             #Placing Towers
 
-            placingTower, towerNameNow, costInstant = shop.updatePurchasables(event_list, gold)
+            placingTower, towerNameNow, costInstant = shop.updatePurchasables(event_list, game_info)
 
             if placing:
                 place = placeItem(towerNamePlacing)
-                placing, gold = place.update(towerList, buildings, gold, placingCost, event_list)
+                placing = place.update(game_info, placingCost, event_list)
                 place.draw(screen)
 
             if placingTower:
@@ -132,7 +145,7 @@ class Main:
             """
             display_text(text, color, font, x, y)
             """
-            text_surface = font.render("Gold: "+str(gold), True, (255, 215, 0))
+            text_surface = font.render("Gold: "+str(game_info.gold), True, (255, 215, 0))
             text_rect = text_surface.get_rect(center=(700, screen.get_height()-50))
             screen.blit(text_surface, text_rect)
 
@@ -147,7 +160,7 @@ class Main:
 
             functions.display_text("Wave Number: "+str(waveNumber), (255, 255, 255), font, 700, screen.get_height()-100)
 
-            functions.display_image("Tombstone", spawn_zone_x+int(spawn_zone_w/2), spawn_zone_y+int(spawn_zone_h/2), 35)
+            functions.display_image(tombstone_image, spawn_zone_x+int(spawn_zone_w/2), spawn_zone_y+int(spawn_zone_h/2), 35)
 
             #Enemy Spawning
 
@@ -215,18 +228,18 @@ class Main:
                     enemyList.remove(enemy)
                     randomNum = randint(0, 100)
                     if randomNum < 31:
-                        gold += 1
+                        game_info.gold += 1
                     continue
-                enemy.update(buildings, player_click_damage, event_list)
+                enemy.update(game_info, player_click_damage, event_list)
                 enemy.draw(screen)
 
             #Tower Stuff
 
-            for towerUnit in towerList:
+            for towerUnit in game_info.tower_list:
                 if towerUnit.update(event_list, enemyList):
                     towerUpgrading = True
                     towerInstanceUpgrading = towerUnit
-                    towerUpgradingName = towerUnit.tower_name
+                    towerUpgradingName = towerUnit.title
 
                 if towerUnit.attack_cooldown == 0:
                     towerUnit.shootEnemy(enemyList)
@@ -236,7 +249,7 @@ class Main:
             if towerUpgrading:
                 upgradeShop = UpgradeShop(towerInstanceUpgrading)
                 upgradeShop.drawShop()
-                gold = upgradeShop.updateUpgrades(event_list, gold)
+                upgradeShop.updateUpgrades(event_list, game_info)
 
                 if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
                     towerUpgrading = False
