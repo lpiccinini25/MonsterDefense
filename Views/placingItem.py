@@ -36,8 +36,11 @@ class placeItem:
         match self.tower:
             case "House":
                 game_info.building_list.append(House(self.tower, self.pos))
+                game_info.update()
             case "ArcherTower":
                 game_info.tower_list.append(ArcherTower(self.tower, pos))
+                game_info.update()
             case "BombTower":
                 game_info.tower_list.append(BombTower(self.tower, pos))
+                game_info.update()
         

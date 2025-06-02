@@ -19,7 +19,7 @@ class Enemy:
         pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
     
     def update(self, game_info, player_click_damage, event_list):
-        self.moveAndAttack(game_info.building_list)
+        self.moveAndAttack(game_info.all_purchasables)
         self.on_click(player_click_damage, event_list)
     
     def on_click(self, player_click_damage, event_list):
@@ -36,22 +36,6 @@ class Enemy:
     def attack(self, building):
         building.take_damage(self.damage)
 
-class Ghoul(Enemy):
-    def __init__(self, enemy_name, scaling, pos):
-        super().__init__(enemy_name, scaling, pos)
-        self.image = pygame.transform.scale(self.image, (25, 25))
-
-        self.totalHealth = random.randint(40, 40+scaling*30)
-        self.currentHealth = self.totalHealth
-        self.speed = random.randint(1, 1+scaling)
-
-        self.damage = random.randint(10, 10+scaling*10)
-        self.default_attack_cooldown = 60
-        self.attack_cooldown = self.default_attack_cooldown
-
-
-        self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
-
     def moveAndAttack(self, buildings):
         minDistance = 2000000
         closestBuilding = None
@@ -60,8 +44,6 @@ class Ghoul(Enemy):
 
         for building in buildings:
             if building.broken:
-                print(game_info.tower_list)
-                print(game_info.building_list)
                 continue
             curr_distance = ((building.pos[0]-self.pos[0])**2+(building.pos[1]-self.pos[1])**2)**0.5
             if curr_distance < minDistance:
@@ -93,6 +75,22 @@ class Ghoul(Enemy):
 
                 self.pos = (new_x, new_y)
                 self.image_rect = self.image.get_rect(center=self.pos)
+
+class Ghoul(Enemy):
+    def __init__(self, enemy_name, scaling, pos):
+        super().__init__(enemy_name, scaling, pos)
+        self.image = pygame.transform.scale(self.image, (25, 25))
+
+        self.totalHealth = random.randint(40, 40+scaling*30)
+        self.currentHealth = self.totalHealth
+        self.speed = random.randint(1, 1+scaling)
+
+        self.damage = random.randint(10, 10+scaling*10)
+        self.default_attack_cooldown = 60
+        self.attack_cooldown = self.default_attack_cooldown
+
+
+        self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
 
 
 class Golem(Enemy):

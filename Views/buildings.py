@@ -27,10 +27,10 @@ class House(building):
         self.image = pygame.transform.scale(self.image, (image_size, image_size))
         self.image_rect = self.image.get_rect(center=self.pos)
 
-        self.broken_house_image = pygame.image.load("assets/BrokenHouse.png").convert()
-        self.broken_house_image.set_colorkey((0, 0, 0))
-        self.broken_house_image = pygame.transform.scale(self.broken_house_image, (30, 30))
-        self.broken_house_image_rect = self.broken_house_image.get_rect(center=self.pos)
+        self.broken_image = pygame.image.load("assets/BrokenHouse.png").convert()
+        self.broken_image.set_colorkey((0, 0, 0))
+        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
+        self.broken_image_rect = self.broken_image.get_rect(center=self.pos)
 
         self.totalHealth = 100
         self.currentHealth = self.totalHealth
@@ -67,7 +67,7 @@ class House(building):
             outline.center = ((self.pos[0], self.pos[1]+15))
             pygame.draw.rect(screen, (158, 78, 34), outline, width=1)
         else:
-            screen.blit(self.broken_image, self.brokenimage_rect)
+            screen.blit(self.broken_image, self.broken_image_rect)
             respawnBar = pygame.Rect(0, 0, 30, 2)
             respawnBar.center = ((self.pos[0], self.pos[1]))
             respawnBar.width = ((self.base_repair_time - self.repair_time)/self.base_repair_time)*30

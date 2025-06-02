@@ -52,19 +52,25 @@ class Main:
         class GameInfo:
             def __init__(self):
                 self.tower_list = []
-                self.gold = 10
                 self.building_list = []
+                self.all_purchasables = []
+
+                self.gold = 10
                 self.player_click_damage = 5
                 self.caps = {
                     'ArcherTowerCap' : 4,
                     'HouseCap' : 3,
                     'BombTowerCap' : 1
                 }
+            
+            def update(self):
+                self.all_purchasables = self.building_list + self.tower_list
         
         game_info = GameInfo()
         
         townHall = TownHall()
         game_info.building_list.append(townHall)
+        game_info.update()
         player_click_damage = 5
 
 
@@ -116,10 +122,9 @@ class Main:
 
             #Building Stuff
 
-            print(game_info.building_list)
             for building in game_info.building_list:
                 if building.currentHealth <= 0:
-                    if building.bulding_name == "TownHall":
+                    if building.title == "TownHall":
                         run_game = False
                 if building.update():
                     game_info.gold += 1
