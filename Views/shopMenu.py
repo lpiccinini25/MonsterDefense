@@ -10,19 +10,19 @@ from Views.playerabilities import Bomb
 from fonts import font
 
 class Item:
-    def __init__(self, x, y, text, title, cost=None, base_cooldown=None):
-        self.x = x
-        self.y = y
+    def __init__(self, x: int, y: int, text: str, title: str, cost:int=None, base_cooldown:int=None):
+        self.x: int = x
+        self.y: int = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
         self.curr_color = Color(200, 100, 200)
         self.hover_color = Color(100, 100, 100)
         self.default_color = Color(200, 100, 200)
         self.text_color = Color(255, 255, 255)
-        self.text = text
-        self.title = title
-        self.cost = cost
-        self.base_cooldown = base_cooldown
-        self.cooldown = 0
+        self.text: str = text
+        self.title: str = title
+        self.cost: int = cost
+        self.base_cooldown: int = base_cooldown
+        self.cooldown: int = 0
 
         #Item Image
         self.base_image = pygame.image.load("assets/"+self.title+".png").convert()
@@ -30,6 +30,8 @@ class Item:
     def draw(self, amount_owned):
         self.rect.center = (self.x, self.y)
         pygame.draw.rect(screen, self.curr_color, self.rect)
+
+        #if costs money display price, if is cooldown based show cooldown
         if self.cost is not None:
             functions.display_text(self.text + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
         elif self.cooldown is not None:
@@ -43,8 +45,8 @@ class Item:
 class Shop:
     def __init__(self):
 
-        self.placing_item = False
-        self.item_being_placed = None
+        self.placing_item: bool = False
+        self.item_being_placed: bool = None
 
         inc = 60
         base = 75
@@ -58,7 +60,7 @@ class Shop:
 
         self.items_owned = dict()
 
-    def draw_items(self):
+    def draw_items(self) -> None:
         for item in self.items:
             amount_owned = self.items_owned[item.title]
             item.draw(amount_owned)
@@ -106,6 +108,7 @@ class Shop:
                 case "Bomb":
                     game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
             
+            #update gold/cooldown depending on if a tower/ability.
             if item_cost is not None:
                 game_info.gold -= item_cost
             elif item_cooldown is not None:
@@ -115,6 +118,7 @@ class Shop:
             self.item_being_placed = None
             game_info.update()
         
+        #cancel placing tower by rightclick
         elif functions.pressed_right_click(event_list):
             self.placing_item = False
             self.item_being_placed = None
