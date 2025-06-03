@@ -1,11 +1,11 @@
 import pygame
 from pygame import Color
-from globals import screen
+from globals import screen, ItemGroup
 import functions
 
 from assetsHovered import hover_ArcherTower
 
-class Tower:
+class Tower(ItemGroup):
     def __init__(self, title, pos):
         self.title = title
         self.pos = pos
@@ -184,6 +184,7 @@ class BombTower(Tower):
         self.attack_cooldown_default = 180
         self.attack_cooldown = self.attack_cooldown_default
 
+        #Arrow Info
         self.arrow_active = False
         self.arrow_pos = [self.pos[0], self.pos[1]]
         self.arrow_target = None

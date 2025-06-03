@@ -4,7 +4,7 @@ import pygame
 from Views.shopMenu import Shop
 from Views.buildings import TownHall
 from globals import screen, GameInfo
-from Views.enemies import Ghoul, Golem
+from Views.enemies import Ghoul, Golem, Wizard
 from random import randint
 from fonts import font
 
@@ -53,6 +53,9 @@ class Main:
         game_info.building_list.append(townHall)
         game_info.update()
         player_click_damage = 0
+
+        #Testing
+        game_info.enemy_list.append(Wizard("Wizard", 1, (0,0)))
 
 
         #Enemies
@@ -222,7 +225,7 @@ class Main:
                     if randomNum < 31:
                         game_info.gold += 1
                     continue
-                enemy.update(game_info, player_click_damage, event_list)
+                enemy.update(game_info)
                 enemy.draw(screen)
 
 

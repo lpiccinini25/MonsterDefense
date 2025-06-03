@@ -1,5 +1,7 @@
 import pygame
 import random
+from globals import screen
+from pygame import Color
 
 class Enemy:
     def __init__(self, enemy_name, scaling, pos):
@@ -18,9 +20,8 @@ class Enemy:
         outline.center = ((self.pos[0], self.pos[1]+13))
         pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
     
-    def update(self, game_info, player_click_damage, event_list):
+    def update(self, game_info):
         self.moveAndAttack(game_info.all_purchasables)
-        self.on_click(player_click_damage, event_list)
     
     def on_click(self, player_click_damage, event_list):
         mouse_pos = pygame.mouse.get_pos()
@@ -109,6 +110,34 @@ class Golem(Enemy):
 
         self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
 
+class Wizard(Enemy):
+    def __init__(self, enemy_name: str, scaling: int, pos: list[int]):
+        super().__init__(enemy_name, scaling, pos)
+        self.image = pygame.transform.scale(self.image, (25, 25))
+
+        self.totalHealth = random.randint(75, 75+scaling*15)
+        self.currentHealth = self.totalHealth
+        self.speed = random.randint(1, 1+int(scaling*0.5))
+
+        #Stats
+        self.damage = random.randint(10, 10)
+        self.default_attack_cooldown = 120
+        self.attack_cooldown = self.default_attack_cooldown
+        self.attack_range = 150
+
+        #Arrow Info
+        self.arrow_active = False
+        self.arrow_pos = [self.pos[0], self.pos[1]]
+        self.arrow_target = None
+        self.arrow_speed = 3
+
+
+        self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
+    
+    def update(self, game_info):
+        self.moveAndAttack(game_info.all_purchasables)
+        self.updateArrow()
+
     def moveAndAttack(self, buildings):
         minDistance = 2000000
         closestBuilding = None
@@ -129,7 +158,7 @@ class Golem(Enemy):
             
             distance = (dx**2 + dy**2)**0.5
             
-            if -1 < distance < 1:
+            if distance < self.attack_range:
                 if self.attack_cooldown == 0:
                     self.attack(closestBuilding)
                     self.attack_cooldown = self.default_attack_cooldown
@@ -148,3 +177,37 @@ class Golem(Enemy):
 
                 self.pos = (new_x, new_y)
                 self.image_rect = self.image.get_rect(center=self.pos)
+        
+    def attack(self, building):
+        self.arrow_target = building
+        self.arrow_pos = list(self.pos)
+        self.arrow_active = True
+        self.attack_cooldown = self.default_attack_cooldown
+
+
+        building.take_damage(self.damage)
+    
+    def updateArrow(self):
+        if not self.arrow_active or self.arrow_target is None:
+            return
+
+        dx = self.arrow_target.pos[0] - self.arrow_pos[0]
+        dy = self.arrow_target.pos[1] - self.arrow_pos[1]
+        distance = (dx**2 + dy**2) ** 0.5
+
+        if distance < self.arrow_speed:
+            self.arrow_active = False 
+
+            self.arrow_target.take_damage(self.damage)
+            self.arrow_pos = [self.pos[0], self.pos[1]]
+            return
+
+        dx_inc = dx / distance * self.arrow_speed
+        dy_inc = dy / distance * self.arrow_speed
+
+        self.arrow_pos[0] += dx_inc
+        self.arrow_pos[1] += dy_inc
+
+        grey = Color(255, 255, 255)
+        bomb_radius = 4
+        pygame.draw.circle(screen, grey, self.arrow_pos, bomb_radius, width=0)

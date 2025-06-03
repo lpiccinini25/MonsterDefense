@@ -1,8 +1,9 @@
 from globals import screen
+from globals import ItemGroup
 import functions
 import pygame
 
-class building:
+class building(ItemGroup):
     def __init__(self, title, pos):
         self.pos = pos
         self.title = title
