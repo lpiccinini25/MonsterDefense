@@ -1,12 +1,16 @@
 import pygame
 from pygame import Color
-from globals import screen
+from globals import screen, GameInfo
 import functions
+
+from Views.towers import ArcherTower, BombTower
+from Views.buildings import House
+from Views.playerabilities import Bomb
 
 from fonts import font
 
-class Purchasable:
-    def __init__(self, x, y, text, title, cost):
+class Item:
+    def __init__(self, x, y, text, title, cost=None, base_cooldown=None):
         self.x = x
         self.y = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
@@ -17,67 +21,142 @@ class Purchasable:
         self.text = text
         self.title = title
         self.cost = cost
-        self.clicked = False
+        self.base_cooldown = base_cooldown
+        self.cooldown = 0
+
+        #Item Image
+        self.base_image = pygame.image.load("assets/"+self.title+".png").convert()
 
     def draw(self, amount_owned):
         self.rect.center = (self.x, self.y)
         pygame.draw.rect(screen, self.curr_color, self.rect)
-        functions.display_text(self.text + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+        if self.cost is not None:
+            functions.display_text(self.text + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+        elif self.cooldown is not None:
+            functions.display_text(self.text + " cooldown is: " + str(self.cooldown) + " seconds.", self.text_color, font, self.x, self.y)
         functions.display_text("Owned: " + str(amount_owned), (255, 255, 255), font, self.x+80, self.y)
 
-    def is_clicked(self, pos):
+    def is_clicked(self):
         print("click" + self.title)
         return True, self.title, self.cost
 
 class Shop:
     def __init__(self):
 
+        self.placing_item = False
+        self.item_being_placed = None
+
         inc = 60
         base = 75
         y = 50
-        self.purchasables = [
-            Purchasable(base, y, "Archer Tower", "ArcherTower", 2),
-            Purchasable(base, y+inc, "House", "House", 2),
-            Purchasable(base, y+inc*2, "Bomb Tower", "BombTower", 6)
+        self.items = [
+            Item(base, y, "Archer Tower", "ArcherTower", cost=2),
+            Item(base, y+inc, "House", "House", cost=2),
+            Item(base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
+            Item(base, y+inc*3, "Bomb", "Bomb", base_cooldown=2000)
         ]
 
-        self.purchasables_owned = dict()
+        self.items_owned = dict()
 
-    def drawPurchasables(self):
-        for purchasable in self.purchasables:
-            amount_owned = self.purchasables_owned[purchasable.title]
-            purchasable.draw(amount_owned)
-        # Add text rendering here
+    def draw_items(self):
+        for item in self.items:
+            amount_owned = self.items_owned[item.title]
+            item.draw(amount_owned)
     
-    def update_purchasables_owned(self, game_info):
-        all_purchasables_owned = dict()
+    def draw_item_being_placed(self) -> None:
+        mouse_pos = pygame.mouse.get_pos()
+        #blit the image of the item being placed at ur mouse position
+        functions.display_image(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1], 40)
+    
+    def update_items_owned(self, game_info: GameInfo) -> None:
+        all_items_owned = dict()
 
-        all_purchasables_owned = game_info.building_list.copy()
-        all_purchasables_owned += game_info.tower_list
-
-
-        self.purchasables_owned = dict()
-        for purchasable in self.purchasables:
-            self.purchasables_owned[purchasable.title] = 0
-
-        for purchasable in all_purchasables_owned:
-            if not purchasable.title == "TownHall":
-                self.purchasables_owned[purchasable.title] += 1
+        all_items_owned = game_info.building_list.copy()
+        all_items_owned += game_info.tower_list
 
 
-    def updatePurchasables(self, event_list, game_info):
+        #create dict for all items possible to place and set vals to 0
+        self.items_owned = dict() 
+        for item in self.items:
+            self.items_owned[item.title] = 0
+
+        #increment item value by one for each instance existing
+        for item in all_items_owned:
+            if not item.title == "TownHall":
+                self.items_owned[item.title] += 1
+
+    def check_place_item(self, event_list: list[pygame.event.Event], game_info: GameInfo) -> None:
+        if functions.pressed_left_click(event_list):
+            print('click')
+            mouse_pos = pygame.mouse.get_pos()
+            item_being_placed = self.item_being_placed
+            item_title = item_being_placed.title
+            item_cost = item_being_placed.cost
+            item_cooldown = item_being_placed.cooldown
+    
+            #if left click, place item at mouse position and append an item instance to corresponding list
+            match item_title:
+                case "House":
+                    game_info.building_list.append(House(item_title, mouse_pos))
+                case "ArcherTower":
+                    print('append')
+                    game_info.tower_list.append(ArcherTower(item_title, mouse_pos))
+                case "BombTower":
+                    game_info.tower_list.append(BombTower(item_title, mouse_pos))
+                case "Bomb":
+                    game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
+            
+            if item_cost is not None:
+                game_info.gold -= item_cost
+            elif item_cooldown is not None:
+                item_being_placed.cooldown = item_being_placed.base_cooldown
+
+            self.placing_item = False
+            self.item_being_placed = None
+            game_info.update()
+        
+        elif functions.pressed_right_click(event_list):
+            self.placing_item = False
+            self.item_being_placed = None
+    
+    def can_get_item(self, item: Item, game_info: GameInfo) -> bool:
+        #if below item cap, and have enough gold / item is not on cooldown, return True, else False
+        if self.items_owned[item.title] < game_info.caps[item.title+'Cap']:
+            if item.cost is not None:
+                if game_info.gold >= item.cost:
+                    return True
+            elif item.cooldown is not None:
+                if item.cooldown <= 0:
+                    return True
+        return False
+
+    def update_menu(self, event_list: list[pygame.event.Event], game_info: GameInfo) -> None:
         mouse_pos = pygame.mouse.get_pos()
 
-        self.update_purchasables_owned(game_info)
+        #make sure items owned is up to date
+        self.update_items_owned(game_info)
 
-        for purchasable in self.purchasables:
-            if purchasable.rect.collidepoint(mouse_pos):
-                purchasable.curr_color = purchasable.hover_color
+        #draw items
+        self.draw_items()
 
-                for event in event_list:
-                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        if game_info.gold >= purchasable.cost and self.purchasables_owned[purchasable.title] < game_info.caps[purchasable.title+'Cap']:
-                            return purchasable.is_clicked(mouse_pos)
-                        
-        
-        return False, None, None
+        #If item was clicked previously, begin drawing that image at ur mouse pos. 
+        if self.placing_item:
+            self.draw_item_being_placed()
+            self.check_place_item(event_list, game_info)
+    
+
+        for item in self.items:
+            if item.rect.collidepoint(mouse_pos):
+                item.curr_color = item.hover_color
+
+                #if someone clicks on item in menu, begin placing that item
+                if functions.is_clicked_on(item.rect, event_list): 
+                    if self.can_get_item(item, game_info):
+                        self.placing_item = True
+                        self.item_being_placed = item
+            else:
+                item.curr_color = item.default_color
+            
+            if item.cooldown is not None:
+                if item.cooldown > 0:
+                    item.cooldown -= 1

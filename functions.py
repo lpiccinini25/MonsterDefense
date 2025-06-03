@@ -1,7 +1,7 @@
 import pygame
 from globals import screen
 
-def is_clicked_on(rect, event_list) -> bool:
+def is_clicked_on(rect, event_list: list[pygame.event.Event]) -> bool:
     mouse_pos = pygame.mouse.get_pos()
     if rect.collidepoint(mouse_pos):
         for event in event_list:
@@ -9,13 +9,23 @@ def is_clicked_on(rect, event_list) -> bool:
                 return True
     return False
 
-def is_clicked_elsewhere(rect, event_list) -> bool:
+def is_clicked_elsewhere(rect, event_list: list[pygame.event.Event]) -> bool:
     mouse_pos = pygame.mouse.get_pos()
     if not rect.collidepoint(mouse_pos):
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 return True
     return False
+
+def pressed_left_click(event_list: list[pygame.event.Event]) -> bool:
+    for event in event_list:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            return True
+
+def pressed_right_click(event_list: list[pygame.event.Event]) -> bool:
+    for event in event_list:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            return True
 
 def display_text(text, color, font, x, y):
     text_surface = font.render(text, True, color)
@@ -27,3 +37,20 @@ def display_image(image, x, y, scaling):
     image = pygame.transform.scale(image, (scaling, scaling))
     image_rect = image.get_rect(center=(x, y))
     screen.blit(image, image_rect)
+
+def display_health_bar(self, current_health: int, base_health: int) -> None:
+    healthBar = pygame.Rect(0, 0, self.size, 2)
+    healthBar.center = ((self.pos[0], self.pos[1]+15))
+    healthBar.width = (current_health/base_health)*self.size
+    pygame.draw.rect(screen, (255, 255, 255), healthBar)
+    outline = pygame.Rect(0, 0, self.size, 4)
+    outline.center = ((self.pos[0], self.pos[1]+15))
+    pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
+
+def find_distance(pos1, pos2) -> float:
+    dx = pos1[0] - pos2[0]
+    dy = pos1[1] - pos2[1]
+
+    distance = (dx**2+dy**2)**0.5
+
+    return distance

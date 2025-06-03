@@ -2,9 +2,8 @@ import functions
 
 import pygame
 from Views.shopMenu import Shop
-from Views.placingItem import placeItem
 from Views.buildings import TownHall
-from globals import screen
+from globals import screen, GameInfo
 from Views.enemies import Ghoul, Golem
 from random import randint
 from fonts import font
@@ -47,24 +46,6 @@ class Main:
         placing = False
         towerUpgrading = False
         tower = ""
-
-        #Player
-        class GameInfo:
-            def __init__(self):
-                self.tower_list = []
-                self.building_list = []
-                self.all_purchasables = []
-
-                self.gold = 6
-                self.player_click_damage = 0
-                self.caps = {
-                    'ArcherTowerCap' : 4,
-                    'HouseCap' : 3,
-                    'BombTowerCap' : 1
-                }
-            
-            def update(self):
-                self.all_purchasables = self.building_list + self.tower_list
         
         game_info = GameInfo()
         
@@ -75,7 +56,6 @@ class Main:
 
 
         #Enemies
-        enemyList = []
         totalEnemiesSpawned = 0
         enemySpawnRange = 300
 
@@ -101,10 +81,11 @@ class Main:
 
         enemySpawnCoolDown = baseLowEnemySpawnCD
 
+        shop = Shop()
+
 
         while run_game:
             screen.fill((0, 0, 0))
-            shop = Shop()
 
             event_list = pygame.event.get()
             for event in event_list:
@@ -121,20 +102,10 @@ class Main:
             clock.tick(60)
 
             #Placing Towers
+            shop.update_menu(event_list, game_info)
 
-            placingTower, towerNameNow, costInstant = shop.updatePurchasables(event_list, game_info)
 
-            if placing:
-                place = placeItem(towerNamePlacing)
-                placing = place.update(game_info, placingCost, event_list)
-                place.draw(screen)
-
-            if placingTower:
-                placing = True
-                towerNamePlacing = towerNameNow
-                placingCost = costInstant
-        
-            shop.drawPurchasables()
+            #if item is in process of being placed, constantly check if user presses mouse. cannot place over buttons.
 
             #Player Stuff/Important Info Displaying
             """
@@ -171,7 +142,7 @@ class Main:
                         distance = (dx**2+dy**2)**0.5
 
                         if distance >= enemySpawnRange:
-                            enemyList.append(Ghoul("Ghoul", waveNumber, spawn_pos))
+                            game_info.enemy_list.append(Ghoul("Ghoul", waveNumber, spawn_pos))
                             totalEnemiesSpawned += 1
 
                         enemySpawnCoolDown = baseLowEnemySpawnCD
@@ -195,9 +166,9 @@ class Main:
                         if distance >= enemySpawnRange:
                             randNum = randint(1, 10)
                             if randNum > 9:
-                                enemyList.append(Golem("Golem",waveNumber, spawn_pos))
+                                game_info.enemy_list.append(Golem("Golem",waveNumber, spawn_pos))
                             else:
-                                enemyList.append(Ghoul("Ghoul",waveNumber, spawn_pos))
+                                game_info.enemy_list.append(Ghoul("Ghoul",waveNumber, spawn_pos))
                             totalEnemiesSpawned += 1
 
                         HighWaveCD -= 1
@@ -222,10 +193,15 @@ class Main:
                 if purchasable.currentHealth <= 0:
                     if purchasable.title == "TownHall":
                         run_game = False
-                if purchasable.update(game_info, event_list, enemyList):
+                if purchasable.update(game_info, event_list, game_info.enemy_list):
                     towerUpgrading = True
                     towerInstanceUpgrading = purchasable
                     towerUpgradingName = purchasable.title
+            
+            #Unattackables
+
+            for unattackable in game_info.unattackable_list:
+                unattackable.update(game_info)
             
             #Tower Upgrading
 
@@ -239,9 +215,9 @@ class Main:
             
             #Enemy Updating
             #print("amount of enemies"+str(len(enemyList)))
-            for enemy in enemyList:
+            for enemy in game_info.enemy_list:
                 if enemy.currentHealth <= 0:
-                    enemyList.remove(enemy)
+                    game_info.enemy_list.remove(enemy)
                     randomNum = randint(0, 100)
                     if randomNum < 31:
                         game_info.gold += 1
