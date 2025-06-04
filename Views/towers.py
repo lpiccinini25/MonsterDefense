@@ -15,6 +15,7 @@ class Tower(ItemGroup):
         self.pos: tuple[int, int] = pos
         self.broken: bool = False
 
+        #Image
         self.image: pygame.Surface = pygame.image.load("assets/"+title+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image: pygame.Surface = pygame.transform.scale(self.image, (40, 40))
@@ -24,6 +25,16 @@ class Tower(ItemGroup):
         self.broken_image.set_colorkey((0, 0, 0))
         self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
         self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
+
+        self.hover: pygame.Surface
+        self.hover_rect: pygame.Rect
+
+        #Stats
+        self.current_health: int
+        self.base_health: int
+        self.repair_time: int
+        self.base_repair_time: int
+
 
     def draw(self, health_bar_color: tuple[int]) -> None:
         mouse_pos = pygame.mouse.get_pos()
@@ -47,11 +58,6 @@ class Tower(ItemGroup):
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
-
-    def take_damage(self, damage_amount: int) -> None:
-        self.current_health -= damage_amount
-        if self.current_health <= 0:
-            self.broken = True
 
 class ArcherTower(Tower):
     def __init__(self, title: str, pos: tuple[int, int]):

@@ -1,5 +1,6 @@
 import pygame
 from globals import screen 
+from typing import Optional
 
 def is_clicked_on(rect: pygame.Rect, event_list: list[pygame.event.Event]) -> bool:
     mouse_pos = pygame.mouse.get_pos()
@@ -21,13 +22,15 @@ def pressed_left_click(event_list: list[pygame.event.Event]) -> bool:
     for event in event_list:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             return True
+    return False
 
 def pressed_right_click(event_list: list[pygame.event.Event]) -> bool:
     for event in event_list:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             return True
+    return False
 
-def display_text(text: str, color: tuple[int], font: pygame.font.Font, x: int, y: int) -> None:
+def display_text(text: str, color: tuple[int, int, int], font: pygame.font.Font, x: int, y: int) -> None:
     text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect(center=(x, y))
     screen.blit(text_surface, text_rect)
@@ -38,7 +41,7 @@ def display_image(image: pygame.Surface, x: int, y: int, scaling: int) -> None:
     image_rect = image.get_rect(center=(x, y))
     screen.blit(image, image_rect)
 
-def display_health_bar(self, current_health: int, base_health: int, health_bar_color: tuple[int], override_size: int = None, override_gap: int = None) -> None:
+def display_health_bar(self, current_health: int, base_health: int, health_bar_color: tuple[int, int, int], override_size: Optional[int] = None, override_gap: Optional[int] = None) -> None:
     if override_size is None:
         healthBar = pygame.Rect(0, 0, self.size, 2)
         healthBar.center = ((self.pos[0], self.pos[1]+15))
@@ -50,13 +53,13 @@ def display_health_bar(self, current_health: int, base_health: int, health_bar_c
     else:
         healthBar = pygame.Rect(0, 0, override_size, 2)
         healthBar.center = ((self.pos[0], self.pos[1]+override_gap))
-        healthBar.width = (current_health/base_health)*override_size
+        healthBar.width = round((current_health/base_health)*override_size)
         pygame.draw.rect(screen, health_bar_color, healthBar)
         outline = pygame.Rect(0, 0, override_size, 4)
         outline.center = ((self.pos[0], self.pos[1]+override_gap))
         pygame.draw.rect(screen, health_bar_color, outline, width=1)
 
-def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_bar_color: tuple[int], override_size: int = None):
+def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_bar_color: tuple[int, int, int], override_size: Optional[int] = None):
     if override_size is None:
         repair_bar = pygame.Rect(0, 0, self.size, 2)
         repair_bar.center = ((self.pos[0], self.pos[1]))
@@ -68,7 +71,7 @@ def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_ba
     else:
         healthBar = pygame.Rect(0, 0, override_size, 2)
         healthBar.center = ((self.pos[0], self.pos[1]))
-        healthBar.width = ((base_repair_time-repair_time)/base_repair_time)*override_size
+        healthBar.width = round(((base_repair_time-repair_time)/base_repair_time)*override_size)
         pygame.draw.rect(screen, repair_bar_color, healthBar)
         outline = pygame.Rect(0, 0, override_size, 4)
         outline.center = ((self.pos[0], self.pos[1]))

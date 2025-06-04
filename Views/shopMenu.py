@@ -1,6 +1,8 @@
 import pygame
 from pygame import Color
-from globals import screen, GameInfo
+from typing import Optional
+
+from globals import screen, GameInfo, ItemGroup
 import functions
 
 from Views.towers import ArcherTower, BombTower
@@ -10,18 +12,18 @@ from Views.playerabilities import Bomb
 from fonts import font
 
 class Item:
-    def __init__(self, x: int, y: int, text: str, title: str, cost:int=None, base_cooldown:int=None):
+    def __init__(self, x: int, y: int, text: str, title: str, cost: Optional[int]=None, base_cooldown: Optional[int]=None):
         self.x: int = x
         self.y: int = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
-        self.curr_color = Color(200, 100, 200)
-        self.hover_color = Color(100, 100, 100)
-        self.default_color = Color(200, 100, 200)
-        self.text_color = Color(255, 255, 255)
+        self.curr_color = (200, 100, 200)
+        self.hover_color = (100, 100, 100)
+        self.default_color = (200, 100, 200)
+        self.text_color = (255, 255, 255)
         self.text: str = text
         self.title: str = title
-        self.cost: int = cost
-        self.base_cooldown: int = base_cooldown
+        self.cost: Optional[int] = cost
+        self.base_cooldown: Optional[int] = base_cooldown
         self.cooldown: int = 0
 
         #Item Image
@@ -39,10 +41,9 @@ class Item:
         functions.display_text("Owned: " + str(amount_owned), (255, 255, 255), font, self.x+80, self.y)
 
 class Shop:
-    def __init__(self):
-
+    def __init__(self, game_info: GameInfo):
         self.placing_item: bool = False
-        self.item_being_placed: bool = None
+        self.item_being_placed: Optional[Item] = None
 
         inc: int = 60
         base: int = 75
@@ -54,7 +55,7 @@ class Shop:
             Item(base, y+inc*3, "Bomb", "Bomb", base_cooldown=2000)
         ]
 
-        self.items_owned: dict[str: int] = dict()
+        self.items_owned: dict[str, int] = dict()
 
     def draw_items(self) -> None:
         for item in self.items:
@@ -62,16 +63,15 @@ class Shop:
             item.draw(amount_owned)
     
     def draw_item_being_placed(self) -> None:
-        mouse_pos = pygame.mouse.get_pos()
-        #blit the image of the item being placed at ur mouse position
-        functions.display_image(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1], 40)
+        if self.item_being_placed is None:
+            return
+        else:
+            #blit the image of the item being placed at ur mouse position
+            mouse_pos = pygame.mouse.get_pos()
+            functions.display_image(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1], 40)
     
     def update_items_owned(self, game_info: GameInfo) -> None:
-        all_items_owned = dict()
-
-        all_items_owned = game_info.building_list.copy()
-        all_items_owned += game_info.tower_list
-
+        all_items_owned: list[ItemGroup] = game_info.all_purchasables
 
         #create dict for all items possible to place and set vals to 0
         self.items_owned = dict() 
@@ -79,18 +79,19 @@ class Shop:
             self.items_owned[item.title] = 0
 
         #increment item value by one for each instance existing
-        for item in all_items_owned:
-            if not item.title == "TownHall":
-                self.items_owned[item.title] += 1
+        for owned in all_items_owned:
+            if not owned.title == "TownHall":
+                self.items_owned[owned.title] += 1
 
     def check_place_item(self, event_list: list[pygame.event.Event], game_info: GameInfo) -> None:
-        if functions.pressed_left_click(event_list):
+        if self.item_being_placed is None:
+            return
+        elif functions.pressed_left_click(event_list):
             print('click')
             mouse_pos = pygame.mouse.get_pos()
             item_being_placed = self.item_being_placed
             item_title = item_being_placed.title
             item_cost = item_being_placed.cost
-            item_cooldown = item_being_placed.cooldown
     
             #if left click, place item at mouse position and append an item instance to corresponding list
             match item_title:
@@ -107,7 +108,7 @@ class Shop:
             #update gold/cooldown depending on if a tower/ability.
             if item_cost is not None:
                 game_info.gold -= item_cost
-            elif item_cooldown is not None:
+            elif item_being_placed.base_cooldown is not None:
                 item_being_placed.cooldown = item_being_placed.base_cooldown
 
             self.placing_item = False

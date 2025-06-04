@@ -31,7 +31,16 @@ class GameInfo:
         self.all_purchasables = self.building_list + self.tower_list
 
 class ItemGroup:
-    pass
+    def __init__(self):
+        self.broken: bool
+        self.pos: tuple[int, int]
+        self.title: str
+
+    def take_damage(self, damage_amount: int) -> None:
+        self.current_health -= damage_amount
+        if self.current_health <= 0:
+            self.broken = True
+
 
 class EnemyGroup:
     pass

@@ -12,11 +12,6 @@ class building(ItemGroup):
 
         self.image = pygame.image.load("assets/"+title+".png")
         self.image.set_colorkey((0, 0, 0))
-    
-    def take_damage(self, damage_amount):
-        self.current_health -= damage_amount
-        if self.current_health <= 0:
-            self.broken = True
 
 class House(building):
     def __init__(self, title, pos):

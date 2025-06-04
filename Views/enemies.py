@@ -7,8 +7,8 @@ import functions
 from typing import Optional
 
 class Enemy():
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int]):
-        self.pos: tuple[int] = pos
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
+        self.pos: tuple[int, int] = pos
         self.image: pygame.Surface = pygame.image.load("assets/"+enemy_name+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
@@ -67,14 +67,14 @@ class Enemy():
                     dx /= distance
                     dy /= distance
 
-                new_x = self.pos[0] + dx * stepDistance
-                new_y = self.pos[1] + dy * stepDistance
+                new_x = round(self.pos[0] + dx * stepDistance)
+                new_y = round(self.pos[1] + dy * stepDistance)
 
                 self.pos = (new_x, new_y)
                 self.image_rect = self.image.get_rect(center=self.pos)
 
 class Ghoul(Enemy):
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int]):
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
         super().__init__(enemy_name, scaling, pos)
         self.size: int = 25
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
@@ -91,7 +91,7 @@ class Ghoul(Enemy):
 
 
 class Golem(Enemy):
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int]):
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
         super().__init__(enemy_name, scaling, pos)
         self.size: int = 35
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
@@ -106,7 +106,7 @@ class Golem(Enemy):
 
 
 class Wizard(Enemy):
-    def __init__(self, enemy_name: str, scaling: int, pos: list[int]):
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
         super().__init__(enemy_name, scaling, pos)
         self.size: int = 25
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
@@ -123,7 +123,7 @@ class Wizard(Enemy):
 
         #Arrow Info
         self.arrow_active: bool = False
-        self.arrow_pos: tuple[int] = (self.pos[0], self.pos[1])
+        self.arrow_pos: tuple[int, int] = (self.pos[0], self.pos[1])
         self.arrow_target: Optional[ItemGroup] = None
         self.arrow_speed: int = 3
 
