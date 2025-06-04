@@ -34,13 +34,13 @@ class WaveManager:
         #Spawn Restrictions
         self.spawn_distance: int = 300
 
-    def spawn_ghoul(self, game_info: GameInfo, pos: list[int]) -> None:
+    def spawn_ghoul(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
         game_info.enemy_list.append(Ghoul("Ghoul", self.enemy_strength, pos))
     
-    def spawn_golem(self, game_info: GameInfo, pos: list[int]) -> None:
+    def spawn_golem(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
         game_info.enemy_list.append(Golem("Golem", self.enemy_strength, pos))
     
-    def spawn_wizard(self, game_info: GameInfo, pos: list[int]) -> None:
+    def spawn_wizard(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
         game_info.enemy_list.append(Wizard("Wizard", self.enemy_strength, pos))
 
     def spawn_in_zone(self, game_info: GameInfo, spawn_zone_x: int, spawn_zone_y: int):
@@ -93,7 +93,7 @@ class WaveManager:
                 distance = 0
                 while distance < self.spawn_distance:
                     spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
-                    middle_of_screen = [screen.get_width()/2, screen.get_height()/2]
+                    middle_of_screen = [round(screen.get_width()/2), round(screen.get_height()/2)]
 
                     distance = functions.find_distance(spawn_pos, middle_of_screen)
 

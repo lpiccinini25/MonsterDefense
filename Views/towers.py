@@ -18,7 +18,7 @@ class Tower(ItemGroup):
         #Image
         self.image: pygame.Surface = pygame.image.load("assets/"+title+".png").convert()
         self.image.set_colorkey((0, 0, 0))
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (40, 40))
+        self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
 
         self.broken_image: pygame.Surface = pygame.image.load("assets/Broken"+title+".png").convert()
@@ -36,7 +36,7 @@ class Tower(ItemGroup):
         self.base_repair_time: int
 
 
-    def draw(self, health_bar_color: tuple[int]) -> None:
+    def draw(self, health_bar_color: tuple[int, int, int]) -> None:
         mouse_pos = pygame.mouse.get_pos()
         if not self.broken:
             if self.image_rect.collidepoint(mouse_pos):
@@ -78,8 +78,8 @@ class ArcherTower(Tower):
 
         #Arrow
         self.arrow_active: bool = False
-        self.startArrow_pos: list[int] = [self.pos[0], self.pos[1]]
-        self.endArrow_pos: list[int] = [self.pos[0], self.pos[1]]
+        self.startArrow_pos: tuple[int, int] = self.pos[0], self.pos[1]
+        self.endArrow_pos: tuple[int, int] = self.pos[0], self.pos[1]
         self.arrow_target: Optional[Enemy] = None
         self.arrow_speed: int = 5
 
@@ -115,6 +115,8 @@ class ArcherTower(Tower):
         #see if clicked. important for upgrading
         if functions.is_clicked_on(self.image_rect, event_list):
             return True
+        
+        return False
 
 
     def shootEnemy(self, enemy_list: list[Enemy]) -> None:
@@ -132,7 +134,7 @@ class ArcherTower(Tower):
         #if enemy found in tower range, set the target to the closest one and launch arrow
         if closestEnemy is not None:
             self.arrow_target = closestEnemy
-            self.startArrow_pos = list(self.pos)
+            self.startArrow_pos = self.pos
             self.arrow_active = True
             self.attack_cooldown = self.attack_cooldown_default
 
@@ -140,9 +142,9 @@ class ArcherTower(Tower):
             dy = self.arrow_target.pos[1] - self.startArrow_pos[1]
             distance = (dx**2 + dy**2) ** 0.5
 
-            dx_inc = dx / distance * self.arrow_speed
-            dy_inc = dy / distance * self.arrow_speed
-            self.endArrow_pos = [self.pos[0]+dx_inc, self.pos[1]+dy_inc]
+            dx_inc = round(dx / distance * self.arrow_speed)
+            dy_inc = round(dy / distance * self.arrow_speed)
+            self.endArrow_pos = (self.pos[0]+dx_inc, self.pos[1]+dy_inc)
         
     def updateArrow(self) -> None:
         if not self.arrow_active or self.arrow_target is None:
@@ -155,8 +157,8 @@ class ArcherTower(Tower):
         #if arrow would overshoot/hit enemy, deal damage to that enemy and remove arrow.
         if distance < self.arrow_speed:
             self.arrow_active = False 
-            self.startArrow_pos = [self.pos[0], self.pos[1]]
-            self.endArrow_pos = [self.pos[0], self.pos[1]]
+            self.startArrow_pos = self.pos[0], self.pos[1]
+            self.endArrow_pos = self.pos[0], self.pos[1]
             self.arrow_target.take_damage(self.damage)
             return
 
@@ -164,11 +166,8 @@ class ArcherTower(Tower):
         dx_inc = round(dx / distance * self.arrow_speed)
         dy_inc = round(dy / distance * self.arrow_speed)
 
-        self.startArrow_pos[0] += dx_inc
-        self.startArrow_pos[1] += dy_inc
-
-        self.endArrow_pos[0] += dx_inc
-        self.endArrow_pos[1] += dy_inc
+        self.endArrow_pos = self.endArrow_pos[0]+dx_inc, self.endArrow_pos[1]+dy_inc
+        self.startArrow_pos = self.endArrow_pos[0]+dx_inc, self.endArrow_pos[1]+dy_inc
 
         #draw arrow
         purple = Color(157, 93, 206)
@@ -187,13 +186,13 @@ class BombTower(Tower):
 
         #Arrow Info
         self.arrow_active: bool = False
-        self.arrow_pos: list[int] = [self.pos[0], self.pos[1]]
+        self.arrow_pos: tuple[int, int] = self.pos[0], self.pos[1]
         self.arrow_target: Optional[Enemy] = None
         self.arrow_speed: int = 5
 
         #Bomb Tower Stats
-        self.attack_cooldown_default: int = 180
-        self.attack_cooldown: int = self.attack_cooldown_default
+        self.attack_cooldown_default = 180
+        self.attack_cooldown = self.attack_cooldown_default
 
         self.damage: int = 30
         self.range: int = 100
@@ -238,7 +237,9 @@ class BombTower(Tower):
         #see if clicked. important for upgrading
         if functions.is_clicked_on(self.image_rect, event_list):
             return True
-
+        
+        return False
+    
 
     def shootEnemy(self, enemy_list: list[Enemy]) -> None:
         minDistance = self.range
@@ -255,7 +256,7 @@ class BombTower(Tower):
         #if enemy found in tower range, set the target to the closest one and launch arrow
         if closestEnemy is not None:
             self.arrow_target = closestEnemy
-            self.arrow_pos = list(self.pos)
+            self.arrow_pos = self.pos
             self.arrow_active = True
             self.attack_cooldown = self.attack_cooldown_default
         
@@ -279,14 +280,13 @@ class BombTower(Tower):
                     enemy.take_damage(self.damage)
             
             #reset bomb position for next fire
-            self.arrow_pos = [self.pos[0], self.pos[1]]
+            self.arrow_pos = self.pos[0], self.pos[1]
             return
 
         dx_inc = round(dx / distance * self.arrow_speed)
         dy_inc = round(dy / distance * self.arrow_speed)
 
-        self.arrow_pos[0] += dx_inc
-        self.arrow_pos[1] += dy_inc
+        self.arrow_pos = self.arrow_pos[0]+dx_inc, self.arrow_pos[1]+dy_inc
 
         grey = Color(200, 200, 200)
         bomb_radius = 3

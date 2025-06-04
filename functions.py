@@ -1,6 +1,6 @@
 import pygame
 from globals import screen 
-from typing import Optional
+from typing import Optional, Union
 
 def is_clicked_on(rect: pygame.Rect, event_list: list[pygame.event.Event]) -> bool:
     mouse_pos = pygame.mouse.get_pos()
@@ -78,10 +78,10 @@ def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_ba
         pygame.draw.rect(screen, repair_bar_color, outline, width=1)
 
 
-def find_distance(pos1: list[int], pos2: list[int]) -> float:
+def find_distance(pos1: Union[list[int], tuple[int, int]], pos2: Union[list[int], tuple[int, int]]) -> int:
     dx = pos1[0] - pos2[0]
     dy = pos1[1] - pos2[1]
 
-    distance = (dx**2+dy**2)**0.5
+    distance = round((dx**2+dy**2)**0.5)
 
     return distance

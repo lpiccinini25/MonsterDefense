@@ -1,5 +1,9 @@
 class TowerModel:
-    pass
+    def __init__(self):
+        self.title: str
+        self.range: int
+        self.damage: int
+        self.default_attack_cooldown: int
 
 class ArcherTowerLevel2(TowerModel):
     def __init__(self):
