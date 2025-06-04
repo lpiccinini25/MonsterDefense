@@ -56,6 +56,25 @@ def display_health_bar(self, current_health: int, base_health: int, health_bar_c
         outline.center = ((self.pos[0], self.pos[1]+override_gap))
         pygame.draw.rect(screen, health_bar_color, outline, width=1)
 
+def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_bar_color: tuple[int], override_size: int = None):
+    if override_size is None:
+        repair_bar = pygame.Rect(0, 0, self.size, 2)
+        repair_bar.center = ((self.pos[0], self.pos[1]))
+        repair_bar.width = ((base_repair_time-repair_time)/base_repair_time)*self.size
+        pygame.draw.rect(screen, repair_bar_color, repair_bar)
+        outline = pygame.Rect(0, 0, self.size, 4)
+        outline.center = ((self.pos[0], self.pos[1]))
+        pygame.draw.rect(screen, repair_bar_color, outline, width=1)
+    else:
+        healthBar = pygame.Rect(0, 0, override_size, 2)
+        healthBar.center = ((self.pos[0], self.pos[1]))
+        healthBar.width = ((base_repair_time-repair_time)/base_repair_time)*override_size
+        pygame.draw.rect(screen, repair_bar_color, healthBar)
+        outline = pygame.Rect(0, 0, override_size, 4)
+        outline.center = ((self.pos[0], self.pos[1]))
+        pygame.draw.rect(screen, repair_bar_color, outline, width=1)
+
+
 def find_distance(pos1: list[int], pos2: list[int]) -> float:
     dx = pos1[0] - pos2[0]
     dy = pos1[1] - pos2[1]

@@ -25,9 +25,9 @@ class Item:
         self.cooldown: int = 0
 
         #Item Image
-        self.base_image = pygame.image.load("assets/"+self.title+".png").convert()
+        self.base_image: pygame.Surface = pygame.image.load("assets/"+self.title+".png").convert()
 
-    def draw(self, amount_owned):
+    def draw(self, amount_owned: int) -> None:
         self.rect.center = (self.x, self.y)
         pygame.draw.rect(screen, self.curr_color, self.rect)
 
@@ -38,27 +38,23 @@ class Item:
             functions.display_text(self.text + " cooldown is: " + str(self.cooldown) + " seconds.", self.text_color, font, self.x, self.y)
         functions.display_text("Owned: " + str(amount_owned), (255, 255, 255), font, self.x+80, self.y)
 
-    def is_clicked(self):
-        print("click" + self.title)
-        return True, self.title, self.cost
-
 class Shop:
     def __init__(self):
 
         self.placing_item: bool = False
         self.item_being_placed: bool = None
 
-        inc = 60
-        base = 75
-        y = 50
-        self.items = [
+        inc: int = 60
+        base: int = 75
+        y: int = 50
+        self.items: list[Item] = [
             Item(base, y, "Archer Tower", "ArcherTower", cost=2),
             Item(base, y+inc, "House", "House", cost=2),
             Item(base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
             Item(base, y+inc*3, "Bomb", "Bomb", base_cooldown=2000)
         ]
 
-        self.items_owned = dict()
+        self.items_owned: dict[str: int] = dict()
 
     def draw_items(self) -> None:
         for item in self.items:

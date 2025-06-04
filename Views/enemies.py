@@ -1,39 +1,41 @@
 import pygame
 import random
-from globals import screen
+from globals import screen, GameInfo, ItemGroup
 from pygame import Color
 import functions
 
+from typing import Optional
+
 class Enemy():
-    def __init__(self, enemy_name, scaling, pos):
-        self.pos = pos
-        self.image = pygame.image.load("assets/"+enemy_name+".png").convert()
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int]):
+        self.pos: tuple[int] = pos
+        self.image: pygame.Surface = pygame.image.load("assets/"+enemy_name+".png").convert()
         self.image.set_colorkey((0, 0, 0))
-        self.image_rect = self.image.get_rect(center=self.pos)
+        self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
+
+        #Stats:
+        self.current_health: int
+        self.base_health: int
+        self.damage: int
+        self.speed: int
+        self.attack_cooldown: int
+        self.default_attack_cooldown: int
     
-    def draw(self):
+    def draw(self) -> None:
         screen.blit(self.image, self.image_rect)
         health_bar_color = (255, 255, 255)
         functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
     
-    def update(self, game_info):
+    def update(self, game_info: GameInfo) -> None:
         self.moveAndAttack(game_info.all_purchasables)
-    
-    def on_click(self, player_click_damage, event_list):
-        mouse_pos = pygame.mouse.get_pos()
 
-        if self.image_rect.collidepoint(mouse_pos):
-            for event in event_list:
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    self.take_damage(player_click_damage)
-
-    def take_damage(self, damage_taken):
+    def take_damage(self, damage_taken: int) -> None:
         self.current_health -= damage_taken
     
-    def attack(self, building):
+    def attack(self, building: ItemGroup) -> None:
         building.take_damage(self.damage)
 
-    def moveAndAttack(self, buildings):
+    def moveAndAttack(self, buildings: list[ItemGroup]) -> None:
         minDistance = 2000000
         closestBuilding = None
 
@@ -72,9 +74,9 @@ class Enemy():
                 self.image_rect = self.image.get_rect(center=self.pos)
 
 class Ghoul(Enemy):
-    def __init__(self, enemy_name, scaling, pos):
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int]):
         super().__init__(enemy_name, scaling, pos)
-        self.size = 25
+        self.size: int = 25
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
         self.base_health: int = random.randint(40, 40+scaling*30)
@@ -89,9 +91,9 @@ class Ghoul(Enemy):
 
 
 class Golem(Enemy):
-    def __init__(self, enemy_name, scaling, pos):
+    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int]):
         super().__init__(enemy_name, scaling, pos)
-        self.size = 35
+        self.size: int = 35
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
         self.base_health: int = random.randint(200, 200+scaling*100)
@@ -106,24 +108,24 @@ class Golem(Enemy):
 class Wizard(Enemy):
     def __init__(self, enemy_name: str, scaling: int, pos: list[int]):
         super().__init__(enemy_name, scaling, pos)
-        self.size = 25
-        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.size: int = 25
+        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
         self.base_health: int = random.randint(75, 75+scaling*15)
         self.current_health: int = self.base_health
         self.speed = random.randint(1, 1+int(scaling*0.5))
 
         #Stats
-        self.damage = random.randint(10, 10)
-        self.default_attack_cooldown = 120
-        self.attack_cooldown = self.default_attack_cooldown
-        self.attack_range = 150
+        self.damage: int = random.randint(10, 10)
+        self.default_attack_cooldown: int = 120
+        self.attack_cooldown: int = self.default_attack_cooldown
+        self.attack_range: int = 150
 
         #Arrow Info
-        self.arrow_active = False
-        self.arrow_pos = [self.pos[0], self.pos[1]]
-        self.arrow_target = None
-        self.arrow_speed = 3
+        self.arrow_active: bool = False
+        self.arrow_pos: tuple[int] = (self.pos[0], self.pos[1])
+        self.arrow_target: Optional[ItemGroup] = None
+        self.arrow_speed: int = 3
 
     
     def update(self, game_info):
@@ -199,5 +201,5 @@ class Wizard(Enemy):
         self.arrow_pos[1] += dy_inc
 
         grey = Color(255, 255, 255)
-        bomb_radius = 4
+        bomb_radius = 3
         pygame.draw.circle(screen, grey, self.arrow_pos, bomb_radius, width=0)

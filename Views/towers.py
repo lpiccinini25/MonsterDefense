@@ -1,4 +1,5 @@
 import pygame
+from typing import Optional
 from pygame import Color
 from globals import screen, ItemGroup, GameInfo
 import functions
@@ -9,15 +10,20 @@ from Views.enemies import Enemy
 from towerModels import TowerModel
 
 class Tower(ItemGroup):
-    def __init__(self, title: str, pos: list[int]):
+    def __init__(self, title: str, pos: tuple[int, int]):
         self.title: str = title
-        self.pos: list[int] = pos
+        self.pos: tuple[int, int] = pos
         self.broken: bool = False
 
         self.image: pygame.Surface = pygame.image.load("assets/"+title+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image: pygame.Surface = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
+
+        self.broken_image: pygame.Surface = pygame.image.load("assets/Broken"+title+".png").convert()
+        self.broken_image.set_colorkey((0, 0, 0))
+        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
+        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
 
     def draw(self, health_bar_color: tuple[int]) -> None:
         mouse_pos = pygame.mouse.get_pos()
@@ -30,9 +36,10 @@ class Tower(ItemGroup):
                 functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
         else:
             screen.blit(self.broken_image, self.broken_image_rect)
-            functions.display_health_bar(self, self.repair_health, self.base_repair_time, health_bar_color)
+            respawn_bar_color = (255, 255, 255)
+            functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
 
-    def upgradeTower(self, newImage: pygame.Surface, tower_model: TowerModel, game_info: GameInfo) -> None:
+    def upgradeTower(self, newImage: str, tower_model: TowerModel, game_info: GameInfo) -> None:
         self.range = tower_model.range
         self.damage = tower_model.damage
         self.default_attack_cooldown = tower_model.default_attack_cooldown
@@ -47,7 +54,7 @@ class Tower(ItemGroup):
             self.broken = True
 
 class ArcherTower(Tower):
-    def __init__(self, title, pos):
+    def __init__(self, title: str, pos: tuple[int, int]):
         super().__init__(title, pos)
 
         self.hover: pygame.Surface = hover_ArcherTower
@@ -60,11 +67,6 @@ class ArcherTower(Tower):
 
         self.size: int = 30
 
-        self.broken_image: pygame.Surface = pygame.image.load("assets/BrokenArcherTower.png").convert()
-        self.broken_image.set_colorkey((0, 0, 0))
-        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
-        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
-
         self.base_health: int = 200
         self.current_health: int = self.base_health
 
@@ -72,7 +74,7 @@ class ArcherTower(Tower):
         self.arrow_active: bool = False
         self.startArrow_pos: list[int] = [self.pos[0], self.pos[1]]
         self.endArrow_pos: list[int] = [self.pos[0], self.pos[1]]
-        self.arrow_target: Enemy | None = None
+        self.arrow_target: Optional[Enemy] = None
         self.arrow_speed: int = 5
 
         #Archer Tower Stats
@@ -153,8 +155,8 @@ class ArcherTower(Tower):
             return
 
         #else, increment the arrow along the newly calculated trajectory
-        dx_inc = dx / distance * self.arrow_speed
-        dy_inc = dy / distance * self.arrow_speed
+        dx_inc = round(dx / distance * self.arrow_speed)
+        dy_inc = round(dy / distance * self.arrow_speed)
 
         self.startArrow_pos[0] += dx_inc
         self.startArrow_pos[1] += dy_inc
@@ -168,7 +170,7 @@ class ArcherTower(Tower):
 
 
 class BombTower(Tower):
-    def __init__(self, title: str, pos: list[int]):
+    def __init__(self, title: str, pos: tuple[int, int]):
         super().__init__(title, pos)
         self.hover: pygame.Surface = self.image
         self.hover = pygame.transform.scale(self.hover, (40, 40))
@@ -180,7 +182,7 @@ class BombTower(Tower):
         #Arrow Info
         self.arrow_active: bool = False
         self.arrow_pos: list[int] = [self.pos[0], self.pos[1]]
-        self.arrow_target: Enemy | None = None
+        self.arrow_target: Optional[Enemy] = None
         self.arrow_speed: int = 5
 
         #Bomb Tower Stats
@@ -274,8 +276,8 @@ class BombTower(Tower):
             self.arrow_pos = [self.pos[0], self.pos[1]]
             return
 
-        dx_inc = dx / distance * self.arrow_speed
-        dy_inc = dy / distance * self.arrow_speed
+        dx_inc = round(dx / distance * self.arrow_speed)
+        dy_inc = round(dy / distance * self.arrow_speed)
 
         self.arrow_pos[0] += dx_inc
         self.arrow_pos[1] += dy_inc

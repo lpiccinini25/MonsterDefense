@@ -14,8 +14,8 @@ class building(ItemGroup):
         self.image.set_colorkey((0, 0, 0))
     
     def take_damage(self, damage_amount):
-        self.currentHealth -= damage_amount
-        if self.currentHealth <= 0:
+        self.current_health -= damage_amount
+        if self.current_health <= 0:
             self.broken = True
 
 class House(building):
@@ -54,7 +54,7 @@ class House(building):
         else:
             self.repair_time = self.base_repair_time
             self.broken = False
-            self.currentHealth = self.totalHealth
+            self.current_health = self.base_health
         
         if functions.is_clicked_on(self.image_rect, event_list):
             return True
@@ -68,7 +68,7 @@ class House(building):
         else:
             screen.blit(self.broken_image, self.broken_image_rect)
             respawn_bar_color = (255, 255, 255)
-            functions.display_health_bar(self, self.current_health, self.base_health, respawn_bar_color)
+            functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
 
 class TownHall(building):
     def __init__(self, title, pos):
@@ -94,10 +94,6 @@ class TownHall(building):
         screen.blit(self.image, self.image_rect)
         health_bar_color = (255, 215, 0)
         functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color, override_size=50, override_gap=21)
-    
-    def take_damage(self, damage_amount):
-        self.currentHealth -= damage_amount
-    
         
     def upgradeTower(self, newImage, towerModel, game_info):
         game_info.caps['ArcherTowerCap'] = towerModel.ArcherTowerCap

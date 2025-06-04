@@ -65,6 +65,7 @@ class WaveManager:
             self.left_to_spawn = self.number_of_enemies
             self.wave_number += 1
             self.low_enemy_spawn = True
+            self.low_enemy_spawn_cooldown = int(self.low_enemy_spawn_cooldown * 11/12)
 
     def move_spawn_zone(self) -> None:
         if self.wave_number % 2 == 0:
