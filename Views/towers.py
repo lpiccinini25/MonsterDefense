@@ -1,137 +1,127 @@
 import pygame
 from pygame import Color
-from globals import screen, ItemGroup
+from globals import screen, ItemGroup, GameInfo
 import functions
 
 from assetsHovered import hover_ArcherTower
+from Views.enemies import Enemy
+
+from towerModels import TowerModel
 
 class Tower(ItemGroup):
-    def __init__(self, title, pos):
-        self.title = title
-        self.pos = pos
-        self.broken = False
+    def __init__(self, title: str, pos: list[int]):
+        self.title: str = title
+        self.pos: list[int] = pos
+        self.broken: bool = False
 
-        self.image = pygame.image.load("assets/"+title+".png").convert()
+        self.image: pygame.Surface = pygame.image.load("assets/"+title+".png").convert()
         self.image.set_colorkey((0, 0, 0))
-        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image: pygame.Surface = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
 
-    def draw(self, health_bar_color):
+    def draw(self, health_bar_color: tuple[int]) -> None:
         mouse_pos = pygame.mouse.get_pos()
         if not self.broken:
             if self.image_rect.collidepoint(mouse_pos):
                 screen.blit(self.hover, self.hover_rect)
-                healthBar = pygame.Rect(0, 0, 30, 2)
-                healthBar.center = ((self.pos[0], self.pos[1]+15))
-                healthBar.width = (self.currentHealth/self.totalHealth)*30
-                pygame.draw.rect(screen, health_bar_color, healthBar)
-                outline = pygame.Rect(0, 0, 30, 4)
-                outline.center = ((self.pos[0], self.pos[1]+15))
-                pygame.draw.rect(screen, health_bar_color, outline, width=1)
+                functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color) 
             else:
                 screen.blit(self.image, self.image_rect)
-                healthBar = pygame.Rect(0, 0, 30, 2)
-                healthBar.center = ((self.pos[0], self.pos[1]+15))
-                healthBar.width = (self.currentHealth/self.totalHealth)*30
-                pygame.draw.rect(screen, health_bar_color, healthBar)
-                outline = pygame.Rect(0, 0, 30, 4)
-                outline.center = ((self.pos[0], self.pos[1]+15))
-                pygame.draw.rect(screen, health_bar_color, outline, width=1)
+                functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
         else:
             screen.blit(self.broken_image, self.broken_image_rect)
-            respawnBar = pygame.Rect(0, 0, 30, 2)
-            respawnBar.center = ((self.pos[0], self.pos[1]))
-            respawnBar.width = ((self.base_repair_time - self.repair_time)/self.base_repair_time)*30
-            pygame.draw.rect(screen, (255, 255, 255), respawnBar)
-            outline = pygame.Rect(0, 0, 30, 4)
-            outline.center = ((self.pos[0], self.pos[1]))
-            pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
+            functions.display_health_bar(self, self.repair_health, self.base_repair_time, health_bar_color)
 
-    def upgradeTower(self, newImage, towerModel, game_info):
-        self.range = towerModel.range
-        self.damage = towerModel.damage
-        self.default_attack_cooldown = towerModel.default_attack_cooldown
+    def upgradeTower(self, newImage: pygame.Surface, tower_model: TowerModel, game_info: GameInfo) -> None:
+        self.range = tower_model.range
+        self.damage = tower_model.damage
+        self.default_attack_cooldown = tower_model.default_attack_cooldown
         self.image = pygame.image.load(newImage).convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
 
-    def take_damage(self, damage_amount):
-        self.currentHealth -= damage_amount
-        if self.currentHealth <= 0:
+    def take_damage(self, damage_amount: int) -> None:
+        self.current_health -= damage_amount
+        if self.current_health <= 0:
             self.broken = True
 
 class ArcherTower(Tower):
     def __init__(self, title, pos):
         super().__init__(title, pos)
 
-        self.hover = hover_ArcherTower
+        self.hover: pygame.Surface = hover_ArcherTower
         self.hover = pygame.transform.scale(self.hover, (40, 40))
-        self.hover_rect = self.hover.get_rect(center=self.pos)
+        self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
 
         #Broken/Repair
-        self.base_repair_time = 1400
-        self.repair_time = self.base_repair_time
+        self.base_repair_time: int = 1400
+        self.repair_time: int = self.base_repair_time
 
-        image_size = 30
+        self.size: int = 30
 
-        self.broken_image = pygame.image.load("assets/BrokenArcherTower.png").convert()
+        self.broken_image: pygame.Surface = pygame.image.load("assets/BrokenArcherTower.png").convert()
         self.broken_image.set_colorkey((0, 0, 0))
         self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
-        self.broken_image_rect = self.broken_image.get_rect(center=self.pos)
+        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
 
-        self.totalHealth = 200
-        self.currentHealth = self.totalHealth
+        self.base_health: int = 200
+        self.current_health: int = self.base_health
 
         #Arrow
-        self.arrow_active = False
-        self.startArrow_pos = [self.pos[0], self.pos[1]]
-        self.endArrow_pos = [self.pos[0], self.pos[1]]
-        self.arrow_target = None
-        self.arrow_speed = 5
+        self.arrow_active: bool = False
+        self.startArrow_pos: list[int] = [self.pos[0], self.pos[1]]
+        self.endArrow_pos: list[int] = [self.pos[0], self.pos[1]]
+        self.arrow_target: Enemy | None = None
+        self.arrow_speed: int = 5
 
         #Archer Tower Stats
-        self.attack_cooldown_default = 100
-        self.attack_cooldown = self.attack_cooldown_default
-        self.range = 200
-        self.damage = 15
+        self.attack_cooldown_default: int = 100
+        self.attack_cooldown: int = self.attack_cooldown_default
+        self.range: int = 200
+        self.damage: int = 15
     
-    def update(self, game_info, event_list, enemyList) -> bool:
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
 
         self.draw((168, 96, 216))
-
+        enemy_list = game_info.enemy_list
+ 
+        #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
+        #change tower to not broken and reset hp to full, else, decrease repair_time left. 
         if not self.broken:
             if self.attack_cooldown > 0:
                 self.attack_cooldown -= 1
             elif not self.arrow_active:
-               self.shootEnemy(enemyList)
+               self.shootEnemy(enemy_list)
         else:
             if self.repair_time == 0:
                 self.broken = False
-                self.currentHealth = self.totalHealth
+                self.current_health = self.base_health
                 self.repair_time = self.base_repair_time
             else:
                 self.repair_time -= 1
         
-        self.updateArrow(screen)
+        #update arrow
+        self.updateArrow()
 
+        #see if clicked. important for upgrading
         if functions.is_clicked_on(self.image_rect, event_list):
             return True
 
 
-    def shootEnemy(self, enemyList):
+    def shootEnemy(self, enemy_list: list[Enemy]) -> None:
         minDistance = self.range
         closestEnemy = None
-        for enemy in enemyList:
-            dx = self.pos[0] - enemy.pos[0]
-            dy = self.pos[1] - enemy.pos[1]
 
-            distance = (dx**2+dy**2)**(0.5)
+        #find the closest enemy within tower range
+        for enemy in enemy_list:
+            distance = functions.find_distance(self.pos, enemy.pos)
 
             if distance < minDistance:
                 minDistance = distance
                 closestEnemy = enemy
             
+        #if enemy found in tower range, set the target to the closest one and launch arrow
         if closestEnemy is not None:
             self.arrow_target = closestEnemy
             self.startArrow_pos = list(self.pos)
@@ -146,7 +136,7 @@ class ArcherTower(Tower):
             dy_inc = dy / distance * self.arrow_speed
             self.endArrow_pos = [self.pos[0]+dx_inc, self.pos[1]+dy_inc]
         
-    def updateArrow(self, screen):
+    def updateArrow(self) -> None:
         if not self.arrow_active or self.arrow_target is None:
             return
 
@@ -154,6 +144,7 @@ class ArcherTower(Tower):
         dy = self.arrow_target.pos[1] - self.startArrow_pos[1]
         distance = (dx**2 + dy**2) ** 0.5
 
+        #if arrow would overshoot/hit enemy, deal damage to that enemy and remove arrow.
         if distance < self.arrow_speed:
             self.arrow_active = False 
             self.startArrow_pos = [self.pos[0], self.pos[1]]
@@ -161,6 +152,7 @@ class ArcherTower(Tower):
             self.arrow_target.take_damage(self.damage)
             return
 
+        #else, increment the arrow along the newly calculated trajectory
         dx_inc = dx / distance * self.arrow_speed
         dy_inc = dy / distance * self.arrow_speed
 
@@ -170,92 +162,96 @@ class ArcherTower(Tower):
         self.endArrow_pos[0] += dx_inc
         self.endArrow_pos[1] += dy_inc
 
+        #draw arrow
         purple = Color(157, 93, 206)
         pygame.draw.line(screen, purple, self.startArrow_pos, self.endArrow_pos, 1)
 
 
 class BombTower(Tower):
-    def __init__(self, title, pos):
+    def __init__(self, title: str, pos: list[int]):
         super().__init__(title, pos)
-        self.hover = self.image
+        self.hover: pygame.Surface = self.image
         self.hover = pygame.transform.scale(self.hover, (40, 40))
-        self.hover_rect = self.hover.get_rect(center=self.pos)
+        self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
 
-        self.attack_cooldown_default = 180
-        self.attack_cooldown = self.attack_cooldown_default
+        self.attack_cooldown_default: int = 180
+        self.attack_cooldown: int = self.attack_cooldown_default
 
         #Arrow Info
-        self.arrow_active = False
-        self.arrow_pos = [self.pos[0], self.pos[1]]
-        self.arrow_target = None
-        self.arrow_speed = 5
+        self.arrow_active: bool = False
+        self.arrow_pos: list[int] = [self.pos[0], self.pos[1]]
+        self.arrow_target: Enemy | None = None
+        self.arrow_speed: int = 5
 
         #Bomb Tower Stats
+        self.attack_cooldown_default: int = 180
+        self.attack_cooldown: int = self.attack_cooldown_default
 
-        self.attack_cooldown_default = 180
-        self.attack_cooldown = self.attack_cooldown_default
+        self.damage: int = 30
+        self.range: int = 100
 
-        self.damage = 30
-        self.range = 100
-
-        self.explosion_radius = 10
+        self.explosion_radius: int = 10
 
         #Broken/Repair
-        self.base_repair_time = 1400
-        self.repair_time = self.base_repair_time
+        self.base_repair_time: int = 1400
+        self.repair_time: int = self.base_repair_time
 
-        image_size = 30
+        self.size: int = 30
 
-        self.broken_image = pygame.image.load("assets/BrokenBombTower.png").convert()
+        self.broken_image: pygame.Surface = pygame.image.load("assets/BrokenBombTower.png").convert()
         self.broken_image.set_colorkey((0, 0, 0))
         self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
-        self.broken_image_rect = self.broken_image.get_rect(center=self.pos)
+        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
 
-        self.totalHealth = 150
-        self.currentHealth = self.totalHealth
+        self.base_health: int = 150
+        self.current_health: int = self.base_health
     
-    def update(self, game_info, event_list, enemyList) -> bool:
-
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
         self.draw((61, 64, 67))
+        enemy_list = game_info.enemy_list
 
+        #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
+        #change tower to not broken and reset hp to full, else, decrease repair_time left. 
         if not self.broken:
             if self.attack_cooldown > 0:
                 self.attack_cooldown -= 1
             elif not self.arrow_active:
-               self.shootEnemy(enemyList)
+               self.shootEnemy(enemy_list)
         else:
             if self.repair_time == 0:
                 self.broken = False
-                self.currentHealth = self.totalHealth
+                self.current_health = self.base_health
             else:
                 self.repair_time -= 1
         
-        self.updateArrow(enemyList)
+        #update bomb
+        self.updateArrow(enemy_list)
 
+        #see if clicked. important for upgrading
         if functions.is_clicked_on(self.image_rect, event_list):
             return True
 
 
-    def shootEnemy(self, enemyList):
+    def shootEnemy(self, enemy_list: list[Enemy]) -> None:
         minDistance = self.range
         closestEnemy = None
-        for enemy in enemyList:
-            dx = self.pos[0] - enemy.pos[0]
-            dy = self.pos[1] - enemy.pos[1]
 
-            distance = (dx**2+dy**2)**(0.5)
+        #find the closest enemy within tower range
+        for enemy in enemy_list:
+            distance = functions.find_distance(self.pos, enemy.pos)
 
             if distance < minDistance:
                 minDistance = distance
                 closestEnemy = enemy
-            
+        
+        #if enemy found in tower range, set the target to the closest one and launch arrow
         if closestEnemy is not None:
             self.arrow_target = closestEnemy
             self.arrow_pos = list(self.pos)
             self.arrow_active = True
             self.attack_cooldown = self.attack_cooldown_default
         
-    def updateArrow(self, enemyList):
+    def updateArrow(self, enemy_list: list[Enemy]) -> None:
         if not self.arrow_active or self.arrow_target is None:
             return
 
@@ -263,19 +259,19 @@ class BombTower(Tower):
         dy = self.arrow_target.pos[1] - self.arrow_pos[1]
         distance = (dx**2 + dy**2) ** 0.5
 
+        #if bomb would overshoot/hit enemy, explode the bomb.
         if distance < self.arrow_speed:
             self.arrow_active = False 
 
-            for enemy in enemyList:
-                dx = enemy.pos[0] - self.arrow_pos[0]
-                dy = enemy.pos[1] - self.arrow_pos[1]
-                distance = (dx**2 + dy**2) ** 0.5
+            #deal damage to all enemies that are within the explosion radius of the bomb at time of impact with main target
+            for enemy in enemy_list:
+                distance = functions.find_distance(self.arrow_pos, enemy.pos)
 
                 if distance < self.explosion_radius:
                     enemy.take_damage(self.damage)
             
+            #reset bomb position for next fire
             self.arrow_pos = [self.pos[0], self.pos[1]]
-
             return
 
         dx_inc = dx / distance * self.arrow_speed

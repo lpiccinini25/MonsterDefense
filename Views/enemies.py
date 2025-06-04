@@ -2,23 +2,19 @@ import pygame
 import random
 from globals import screen
 from pygame import Color
+import functions
 
-class Enemy:
+class Enemy():
     def __init__(self, enemy_name, scaling, pos):
         self.pos = pos
         self.image = pygame.image.load("assets/"+enemy_name+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image_rect = self.image.get_rect(center=self.pos)
     
-    def draw(self, screen):
+    def draw(self):
         screen.blit(self.image, self.image_rect)
-        healthBar = pygame.Rect(0, 0, 25, 2)
-        healthBar.center = ((self.pos[0], self.pos[1]+13))
-        healthBar.width = (self.currentHealth/self.totalHealth)*25
-        pygame.draw.rect(screen, (255, 255, 255), healthBar)
-        outline = pygame.Rect(0, 0, 25, 4)
-        outline.center = ((self.pos[0], self.pos[1]+13))
-        pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
+        health_bar_color = (255, 255, 255)
+        functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
     
     def update(self, game_info):
         self.moveAndAttack(game_info.all_purchasables)
@@ -32,7 +28,7 @@ class Enemy:
                     self.take_damage(player_click_damage)
 
     def take_damage(self, damage_taken):
-        self.currentHealth -= damage_taken
+        self.current_health -= damage_taken
     
     def attack(self, building):
         building.take_damage(self.damage)
@@ -61,8 +57,6 @@ class Enemy:
                 if self.attack_cooldown == 0:
                     self.attack(closestBuilding)
                     self.attack_cooldown = self.default_attack_cooldown
-                    print("attacked!")
-                    print(closestBuilding.currentHealth)
                 else:
                     self.attack_cooldown -= 1
             
@@ -80,43 +74,43 @@ class Enemy:
 class Ghoul(Enemy):
     def __init__(self, enemy_name, scaling, pos):
         super().__init__(enemy_name, scaling, pos)
-        self.image = pygame.transform.scale(self.image, (25, 25))
+        self.size = 25
+        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
-        self.totalHealth = random.randint(40, 40+scaling*30)
-        self.currentHealth = self.totalHealth
-        self.speed = random.randint(1, 1+scaling)
+        self.base_health: int = random.randint(40, 40+scaling*30)
+        self.current_health: int = self.base_health
+        self.speed: int = random.randint(1, 1+scaling)
 
-        self.damage = random.randint(10, 10+scaling*10)
-        self.default_attack_cooldown = 60
-        self.attack_cooldown = self.default_attack_cooldown
+        self.damage: int = random.randint(10, 10+scaling*10)
+        self.default_attack_cooldown: int = 60
+        self.attack_cooldown: int = self.default_attack_cooldown
 
 
-        self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
 
 
 class Golem(Enemy):
     def __init__(self, enemy_name, scaling, pos):
         super().__init__(enemy_name, scaling, pos)
-        self.image = pygame.transform.scale(self.image, (35, 35))
+        self.size = 35
+        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
-        self.totalHealth = random.randint(200, 200+scaling*100)
-        self.currentHealth = self.totalHealth
-        self.speed = random.randint(1, 1+int(scaling*0.5))
+        self.base_health: int = random.randint(200, 200+scaling*100)
+        self.current_health: int = self.base_health
+        self.speed: int = random.randint(1, 1+int(scaling*0.5))
 
-        self.damage = random.randint(10, 10)
-        self.default_attack_cooldown = 120
-        self.attack_cooldown = self.default_attack_cooldown
+        self.damage: int = random.randint(10, 10)
+        self.default_attack_cooldown: int = 120
+        self.attack_cooldown: int = self.default_attack_cooldown
 
-
-        self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
 
 class Wizard(Enemy):
     def __init__(self, enemy_name: str, scaling: int, pos: list[int]):
         super().__init__(enemy_name, scaling, pos)
-        self.image = pygame.transform.scale(self.image, (25, 25))
+        self.size = 25
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
 
-        self.totalHealth = random.randint(75, 75+scaling*15)
-        self.currentHealth = self.totalHealth
+        self.base_health: int = random.randint(75, 75+scaling*15)
+        self.current_health: int = self.base_health
         self.speed = random.randint(1, 1+int(scaling*0.5))
 
         #Stats
@@ -131,8 +125,6 @@ class Wizard(Enemy):
         self.arrow_target = None
         self.arrow_speed = 3
 
-
-        self.totalPower = (self.totalHealth*0.25 + self.speed*100 + self.damage*20)
     
     def update(self, game_info):
         self.moveAndAttack(game_info.all_purchasables)
@@ -162,8 +154,6 @@ class Wizard(Enemy):
                 if self.attack_cooldown == 0:
                     self.attack(closestBuilding)
                     self.attack_cooldown = self.default_attack_cooldown
-                    print("attacked!")
-                    print(closestBuilding.currentHealth)
                 else:
                     self.attack_cooldown -= 1
             

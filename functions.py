@@ -38,14 +38,23 @@ def display_image(image: pygame.Surface, x: int, y: int, scaling: int) -> None:
     image_rect = image.get_rect(center=(x, y))
     screen.blit(image, image_rect)
 
-def display_health_bar(self, current_health: int, base_health: int) -> None:
-    healthBar = pygame.Rect(0, 0, self.size, 2)
-    healthBar.center = ((self.pos[0], self.pos[1]+15))
-    healthBar.width = (current_health/base_health)*self.size
-    pygame.draw.rect(screen, (255, 255, 255), healthBar)
-    outline = pygame.Rect(0, 0, self.size, 4)
-    outline.center = ((self.pos[0], self.pos[1]+15))
-    pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
+def display_health_bar(self, current_health: int, base_health: int, health_bar_color: tuple[int], override_size: int = None, override_gap: int = None) -> None:
+    if override_size is None:
+        healthBar = pygame.Rect(0, 0, self.size, 2)
+        healthBar.center = ((self.pos[0], self.pos[1]+15))
+        healthBar.width = (current_health/base_health)*self.size
+        pygame.draw.rect(screen, health_bar_color, healthBar)
+        outline = pygame.Rect(0, 0, self.size, 4)
+        outline.center = ((self.pos[0], self.pos[1]+15))
+        pygame.draw.rect(screen, health_bar_color, outline, width=1)
+    else:
+        healthBar = pygame.Rect(0, 0, override_size, 2)
+        healthBar.center = ((self.pos[0], self.pos[1]+override_gap))
+        healthBar.width = (current_health/base_health)*override_size
+        pygame.draw.rect(screen, health_bar_color, healthBar)
+        outline = pygame.Rect(0, 0, override_size, 4)
+        outline.center = ((self.pos[0], self.pos[1]+override_gap))
+        pygame.draw.rect(screen, health_bar_color, outline, width=1)
 
 def find_distance(pos1: list[int], pos2: list[int]) -> float:
     dx = pos1[0] - pos2[0]

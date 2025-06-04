@@ -25,8 +25,8 @@ class House(building):
         self.base_repair_time = 1400
         self.repair_time = self.base_repair_time
 
-        image_size = 30
-        self.image = pygame.transform.scale(self.image, (image_size, image_size))
+        self.size = 30
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image_rect = self.image.get_rect(center=self.pos)
 
         self.broken_image = pygame.image.load("assets/BrokenHouse.png").convert()
@@ -34,12 +34,12 @@ class House(building):
         self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
         self.broken_image_rect = self.broken_image.get_rect(center=self.pos)
 
-        self.totalHealth = 100
-        self.currentHealth = self.totalHealth
+        self.base_health = 100
+        self.current_health = self.base_health
         self.defaultGoldGenerationCoolDown = 700
         self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
 
-    def update(self, game_info, event_list, enemyList):
+    def update(self, game_info, event_list):
 
         self.draw()
 
@@ -63,22 +63,12 @@ class House(building):
     def draw(self):
         if not self.broken:
             screen.blit(self.image, self.image_rect)
-            healthBar = pygame.Rect(0, 0, 30, 2)
-            healthBar.center = ((self.pos[0], self.pos[1]+15))
-            healthBar.width = (self.currentHealth/self.totalHealth)*30
-            pygame.draw.rect(screen, (158, 78, 34), healthBar)
-            outline = pygame.Rect(0, 0, 30, 4)
-            outline.center = ((self.pos[0], self.pos[1]+15))
-            pygame.draw.rect(screen, (158, 78, 34), outline, width=1)
+            health_bar_color = (158, 87, 34)
+            functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
         else:
             screen.blit(self.broken_image, self.broken_image_rect)
-            respawnBar = pygame.Rect(0, 0, 30, 2)
-            respawnBar.center = ((self.pos[0], self.pos[1]))
-            respawnBar.width = ((self.base_repair_time - self.repair_time)/self.base_repair_time)*30
-            pygame.draw.rect(screen, (255, 255, 255), respawnBar)
-            outline = pygame.Rect(0, 0, 30, 4)
-            outline.center = ((self.pos[0], self.pos[1]))
-            pygame.draw.rect(screen, (255, 255, 255), outline, width=1)
+            respawn_bar_color = (255, 255, 255)
+            functions.display_health_bar(self, self.current_health, self.base_health, respawn_bar_color)
 
 class TownHall(building):
     def __init__(self, title, pos):
@@ -87,13 +77,13 @@ class TownHall(building):
         self.title = "TownHall"
         self.pos = (screen.get_width()/2, screen.get_height()/2)
 
-        image_size = 75
-        self.image = pygame.transform.scale(self.image, (image_size, image_size))
+        self.size = 75
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image_rect = self.image.get_rect(center=self.pos)
-        self.totalHealth = 1000
-        self.currentHealth = self.totalHealth
+        self.base_health = 1000
+        self.current_health = self.base_health
 
-    def update(self, game_info, event_list, enemyList):
+    def update(self, game_info, event_list):
         self.draw()
         
         if functions.is_clicked_on(self.image_rect, event_list):
@@ -102,13 +92,8 @@ class TownHall(building):
     
     def draw(self):
         screen.blit(self.image, self.image_rect)
-        healthBar = pygame.Rect(0, 0, 50, 2)
-        healthBar.center = ((self.pos[0], self.pos[1]+22))
-        healthBar.width = (self.currentHealth/self.totalHealth)*50
-        pygame.draw.rect(screen, (255, 215, 0), healthBar)
-        outline = pygame.Rect(0, 0, 50, 4)
-        outline.center = ((self.pos[0], self.pos[1]+22))
-        pygame.draw.rect(screen, (255, 215, 0), outline, width=1)
+        health_bar_color = (255, 215, 0)
+        functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color, override_size=50, override_gap=21)
     
     def take_damage(self, damage_amount):
         self.currentHealth -= damage_amount

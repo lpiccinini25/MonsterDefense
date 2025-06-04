@@ -9,12 +9,13 @@ if TYPE_CHECKING:
     from Views.playerabilities import Bomb
     from Views.enemies import Ghoul, Golem
 
+
 class GameInfo:
     def __init__(self):
         self.tower_list: list[ArcherTower | BombTower] = []
         self.building_list: list[House | TownHall] = []
         self.all_purchasables: list[ItemGroup] = []
-        self.enemy_list: list[Ghoul | Golem] = []
+        self.enemy_list: list[EnemyGroup] = []
         self.unattackable_list: list[Bomb] = []
 
         self.gold: int = 6
@@ -30,4 +31,7 @@ class GameInfo:
         self.all_purchasables = self.building_list + self.tower_list
 
 class ItemGroup:
+    pass
+
+class EnemyGroup:
     pass

@@ -57,7 +57,7 @@ class Main:
         player_click_damage = 0
 
         #Testing
-        game_info.enemy_list.append(Wizard("Wizard", 1, (0,0)))
+        #game_info.enemy_list.append(Wizard("Wizard", 1, (0,0)))
 
         #initialize core classes
         shop = Shop()
@@ -109,10 +109,10 @@ class Main:
             #Tower Stuff
 
             for purchasable in game_info.all_purchasables:
-                if purchasable.currentHealth <= 0:
+                if purchasable.current_health <= 0:
                     if purchasable.title == "TownHall":
                         run_game = False
-                if purchasable.update(game_info, event_list, game_info.enemy_list):
+                if purchasable.update(game_info, event_list):
                     towerUpgrading = True
                     towerInstanceUpgrading = purchasable
                     towerUpgradingName = purchasable.title
@@ -139,14 +139,14 @@ class Main:
             #Enemy Updating
             #print("amount of enemies"+str(len(enemyList)))
             for enemy in game_info.enemy_list:
-                if enemy.currentHealth <= 0:
+                if enemy.current_health <= 0:
                     game_info.enemy_list.remove(enemy)
                     randomNum = randint(0, 100)
                     if randomNum < 31:
                         game_info.gold += 1
                     continue
                 enemy.update(game_info)
-                enemy.draw(screen)
+                enemy.draw()
 
 
             pygame.display.update()

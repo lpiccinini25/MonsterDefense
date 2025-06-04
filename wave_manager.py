@@ -60,24 +60,28 @@ class WaveManager:
             else:
                 self.enemy_spawn_cooldown -= 1
         else:
-            if self.wave_number % 2 == 0:
-                self.spawn_zone_x = int(screen.get_width()*randint(0, 4)/5)
-                rand = randint(1, 2)
-                if rand % 2 == 0:
-                    self.spawn_zone_y = 0
-                else:
-                    self.spawn_zone_y = 4*screen.get_height()/5
-            else:
-                self.spawn_zone_y = int(screen.get_height()*randint(0, 4)/5)
-                rand = randint(1, 2)
-                if rand % 2 == 0:
-                    self.spawn_zone_x = 0
-                else:
-                    self.spawn_zone_x = 4*screen.get_width()/5
+            self.move_spawn_zone()
             self.number_of_enemies += 2
             self.left_to_spawn = self.number_of_enemies
             self.wave_number += 1
             self.low_enemy_spawn = True
+
+    def move_spawn_zone(self) -> None:
+        if self.wave_number % 2 == 0:
+            self.spawn_zone_x = int(screen.get_width()*randint(0, 4)/5)
+            rand = randint(1, 2)
+            if rand % 2 == 0:
+                self.spawn_zone_y = 0
+            else:
+                self.spawn_zone_y = int(4*screen.get_height()/5)
+        else:
+            self.spawn_zone_y = int(screen.get_height()*randint(0, 4)/5)
+            rand = randint(1, 2)
+            if rand % 2 == 0:
+                self.spawn_zone_x = 0
+            else:
+                self.spawn_zone_x = int(4*screen.get_width()/5)
+
     
     def spawn_random(self, game_info: GameInfo) -> None:
             if self.wave_duration <= 0:

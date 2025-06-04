@@ -31,8 +31,9 @@ class Bomb(Ability):
         self.image_rect = self.image.get_rect(center=self.pos)
     
     def draw(self):
+        cooldown_bar_color = (255, 255, 255)
         screen.blit(self.image, self.image_rect)
-        functions.display_health_bar(self, self.fuse_time, self.base_fuse_time)
+        functions.display_health_bar(self, self.fuse_time, self.base_fuse_time, cooldown_bar_color)
 
     def is_exploding(self):
         if self.fuse_time <= 0:
