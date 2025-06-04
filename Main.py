@@ -60,7 +60,7 @@ class Main:
         #game_info.enemy_list.append(Wizard("Wizard", 1, (0,0)))
 
         #initialize core classes
-        shop = Shop()
+        shop = Shop(game_info)
         wave_manager = WaveManager()
 
         while run_game:
@@ -79,9 +79,6 @@ class Main:
                     # can access properties with
                     # proper notation(ex: event.y)
             clock.tick(60)
-
-            #Placing Towers
-            shop.update_menu(event_list, game_info)
 
 
             #if item is in process of being placed, constantly check if user presses mouse. cannot place over buttons.
@@ -116,6 +113,9 @@ class Main:
                     towerUpgrading = True
                     towerInstanceUpgrading = purchasable
                     towerUpgradingName = purchasable.title
+
+            #Placing Towers
+            shop.update_menu(event_list, game_info)
             
             #Unattackables
 

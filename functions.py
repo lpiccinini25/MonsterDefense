@@ -1,5 +1,5 @@
 import pygame
-from globals import screen 
+from globals import screen, GameInfo
 from typing import Optional, Union
 
 def is_clicked_on(rect: pygame.Rect, event_list: list[pygame.event.Event]) -> bool:
@@ -78,10 +78,19 @@ def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_ba
         pygame.draw.rect(screen, repair_bar_color, outline, width=1)
 
 
-def find_distance(pos1: Union[list[int], tuple[int, int]], pos2: Union[list[int], tuple[int, int]]) -> int:
+def find_distance(pos1: Union[tuple[float, float], tuple[int, int]], pos2: Union[tuple[float, float], tuple[int, int]]) -> int:
     dx = pos1[0] - pos2[0]
     dy = pos1[1] - pos2[1]
 
     distance = round((dx**2+dy**2)**0.5)
 
     return distance
+
+def repair_tower_clicked(repair_amount: int, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
+    for tower in game_info.all_purchasables:
+        if is_clicked_on(tower.image_rect, event_list):
+            if tower.current_health < tower.base_health:
+                tower.repair(repair_amount)
+                return True
+    return False
+

@@ -24,7 +24,8 @@ class GameInfo:
             'ArcherTowerCap' : 4,
             'HouseCap' : 3,
             'BombTowerCap' : 1,
-            'BombCap': 1
+            'BombCap': 1,
+            'RepairCap': 1
         }
     
     def update(self) -> None:
@@ -36,11 +37,21 @@ class ItemGroup:
         self.pos: tuple[int, int]
         self.title: str
         self.current_health: int
+        self.base_health: int
+        self.image: pygame.Surface
+        self.image_rect: pygame.Rect
 
     def take_damage(self, damage_amount: int) -> None:
         self.current_health -= damage_amount
         if self.current_health <= 0:
             self.broken = True
+    
+    def repair(self, repair_amount: int) -> None:
+        if self.current_health + repair_amount >= self.base_health:
+            self.current_health = self.base_health
+        else:
+            self.current_health += repair_amount
+
 
 
 class EnemyGroup:

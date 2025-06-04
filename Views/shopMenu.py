@@ -12,7 +12,7 @@ from Views.playerabilities import Bomb
 from fonts import font
 
 class Item:
-    def __init__(self, x: int, y: int, text: str, title: str, cost: Optional[int]=None, base_cooldown: Optional[int]=None):
+    def __init__(self, x: int, y: int, text: str, title: str, cost: Optional[int]=None, base_cooldown: Optional[int]=None, repair_amount: Optional[int]=None):
         self.x: int = x
         self.y: int = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
@@ -25,6 +25,7 @@ class Item:
         self.cost: Optional[int] = cost
         self.base_cooldown: Optional[int] = base_cooldown
         self.cooldown: int = 0
+        self.repair_amount: Optional[int] = repair_amount
 
         #Item Image
         self.base_image: pygame.Surface = pygame.image.load("assets/"+self.title+".png").convert()
@@ -52,7 +53,8 @@ class Shop:
             Item(base, y, "Archer Tower", "ArcherTower", cost=2),
             Item(base, y+inc, "House", "House", cost=2),
             Item(base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
-            Item(base, y+inc*3, "Bomb", "Bomb", base_cooldown=2000)
+            Item(base, y+inc*3, "Bomb", "Bomb", base_cooldown=2000),
+            Item(base, y+inc*4, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
         ]
 
         self.items_owned: dict[str, int] = dict()
@@ -104,7 +106,14 @@ class Shop:
                     game_info.tower_list.append(BombTower(item_title, mouse_pos))
                 case "Bomb":
                     game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
-            
+                case "Repair":
+                    if self.item_being_placed.repair_amount is None:
+                        return
+                    elif not functions.repair_tower_clicked(self.item_being_placed.repair_amount, game_info, event_list):
+                        self.placing_item = False
+                        self.item_being_placed = None
+                        return
+                    
             #update gold/cooldown depending on if a tower/ability.
             if item_cost is not None:
                 game_info.gold -= item_cost

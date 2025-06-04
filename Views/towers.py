@@ -68,7 +68,7 @@ class ArcherTower(Tower):
         self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
 
         #Broken/Repair
-        self.base_repair_time: int = 1400
+        self.base_repair_time: int = 2000
         self.repair_time: int = self.base_repair_time
 
         self.size: int = 30
@@ -200,7 +200,7 @@ class BombTower(Tower):
         self.explosion_radius: int = 10
 
         #Broken/Repair
-        self.base_repair_time: int = 1400
+        self.base_repair_time: int = 2000
         self.repair_time: int = self.base_repair_time
 
         self.size: int = 30
@@ -225,9 +225,10 @@ class BombTower(Tower):
             elif not self.arrow_active:
                self.shootEnemy(enemy_list)
         else:
-            if self.repair_time == 0:
+            if self.repair_time <= 0:
                 self.broken = False
                 self.current_health = self.base_health
+                self.repair_time = self.base_repair_time
             else:
                 self.repair_time -= 1
         
