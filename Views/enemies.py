@@ -6,20 +6,111 @@ import functions
 
 from typing import Optional
 
+class EnemyModel:
+    def __init__(self):
+        #EnemyModel Title
+        self.title: str
+
+        #Image Size
+        self.size: int
+
+        #Scaling
+        self.health_scaling_factor: int
+        self.damage_scaling_factor: int
+        self.speed_scaling_factor: int
+
+        #Starting Stats
+        self.start_damage: int
+        self.start_health: int
+        self.start_speed: int
+
+        #Cooldown
+        self.base_attack_cooldown: int
+        self.attack_range: Optional[int]
+
+class GhoulModel(EnemyModel):
+    def __init__(self):
+        self.title = "Ghoul"
+
+        self.size: int = 25
+
+        self.health_scaling_factor: int = 40
+        self.damage_scaling_factor: int = 14
+        self.speed_scaling_factor: int = 4
+
+        self.start_damage: int = 15
+        self.start_health: int = 40
+        self.start_speed: int = 2
+
+        self.base_attack_cooldown: int = 60
+        self.attack_range: Optional[int] = None
+
+class GolemModel(EnemyModel):
+    def __init__(self):
+        self.title = "Golem"
+
+        self.size: int = 35
+
+        self.health_scaling_factor: int = 100
+        self.damage_scaling_factor: int = 5
+        self.speed_scaling_factor: int = 2
+
+        self.start_damage: int = 10
+        self.start_health: int = 200
+        self.start_speed: int = 1
+
+        self.base_attack_cooldown: int = 60
+        self.attack_range: Optional[int] = None
+
+class WizardModel(EnemyModel):
+    def __init__(self):
+        self.title = "Wizard"
+
+        self.size: int = 25
+
+        self.health_scaling_factor: int = 20
+        self.damage_scaling_factor: int = 10
+        self.speed_scaling_factor: int = 4
+
+        self.start_damage: int = 10
+        self.start_health: int = 40
+        self.start_speed: int = 1
+
+        self.base_attack_cooldown: int = 120
+        self.attack_range: Optional[int] = 150
+
+
 class Enemy():
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[float, float]):
+    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[float, float]):
+
+        enemy_name = enemy_model.title
+
         self.pos: tuple[float, float] = pos
+        self.scaling: int = scaling
+        self.size: int = enemy_model.size
         self.image: pygame.Surface = pygame.image.load("assets/"+enemy_name+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
 
-        #Stats:
-        self.current_health: int
-        self.base_health: int
-        self.damage: int
-        self.speed: int
-        self.attack_cooldown: int
-        self.default_attack_cooldown: int
+        #Stats -- 
+        #Health
+        health_low_bound: int = int(enemy_model.start_health+self.scaling*enemy_model.health_scaling_factor*(0.5))
+        health_high_bound: int = int(enemy_model.start_health+self.scaling*enemy_model.health_scaling_factor*(1))
+        self.base_health: int = random.randint(health_low_bound, health_high_bound)
+        self.current_health: int = self.base_health
+        #Damage
+        damage_low_bound: int = int(enemy_model.start_damage+self.scaling*enemy_model.damage_scaling_factor*(0.5))
+        damage_high_bound: int = int(enemy_model.start_damage+self.scaling*enemy_model.damage_scaling_factor*(1))
+        self.damage: int = random.randint(damage_low_bound, damage_high_bound)
+        #Speed
+        speed_low_bound: int = int(enemy_model.start_speed+self.scaling*enemy_model.speed_scaling_factor*(0.5))
+        speed_high_bound: int = int(enemy_model.start_speed+self.scaling*enemy_model.speed_scaling_factor*(1))
+        self.speed: int = random.randint(speed_low_bound, speed_high_bound)
+        #Attack Cooldown
+        self.base_attack_cooldown: int = enemy_model.base_attack_cooldown
+        self.attack_cooldown: int = self.base_attack_cooldown
+        #Attack Range
+        self.attack_range: Optional[int] = enemy_model.attack_range
 
         #Status Effects
         self.on_click_slow_strength = 40
@@ -81,7 +172,7 @@ class Enemy():
             if -1 < distance < 1:
                 if self.attack_cooldown == 0:
                     self.attack(closestBuilding)
-                    self.attack_cooldown = self.default_attack_cooldown
+                    self.attack_cooldown = self.base_attack_cooldown
                 else:
                     self.attack_cooldown -= 1
             
@@ -97,52 +188,21 @@ class Enemy():
                 self.image_rect = self.image.get_rect(center=self.pos)
 
 class Ghoul(Enemy):
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
-        super().__init__(enemy_name, scaling, pos)
+    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[int, int]):
+        super().__init__(enemy_model, scaling, pos)
         self.size: int = 25
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
-        self.base_health: int = random.randint(40, 40+scaling*30)
-        self.current_health: int = self.base_health
-        self.speed: int = random.randint(1, 1+scaling)
-
-        self.damage: int = random.randint(10, 10+scaling*10)
-        self.default_attack_cooldown: int = 60
-        self.attack_cooldown: int = self.default_attack_cooldown
-
-
-
-
 class Golem(Enemy):
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
-        super().__init__(enemy_name, scaling, pos)
-        self.size: int = 35
+    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[int, int]):
+        super().__init__(enemy_model, scaling, pos)
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
-
-        self.base_health: int = random.randint(200, 200+scaling*100)
-        self.current_health: int = self.base_health
-        self.speed: int = random.randint(1, 1+int(scaling*0.5))
-
-        self.damage: int = random.randint(10, 10)
-        self.default_attack_cooldown: int = 120
-        self.attack_cooldown: int = self.default_attack_cooldown
 
 
 class Wizard(Enemy):
-    def __init__(self, enemy_name: str, scaling: int, pos: tuple[int, int]):
-        super().__init__(enemy_name, scaling, pos)
-        self.size: int = 25
+    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[int, int]):
+        super().__init__(enemy_model, scaling, pos)
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
-
-        self.base_health: int = random.randint(75, 75+scaling*15)
-        self.current_health: int = self.base_health
-        self.speed = random.randint(1, 1+int(scaling*0.5))
-
-        #Stats
-        self.damage: int = random.randint(10, 10)
-        self.default_attack_cooldown: int = 120
-        self.attack_cooldown: int = self.default_attack_cooldown
-        self.attack_range: int = 150
 
         #Arrow Info
         self.arrow_active: bool = False
@@ -181,7 +241,7 @@ class Wizard(Enemy):
             if distance < self.attack_range:
                 if self.attack_cooldown == 0:
                     self.attack(closestBuilding)
-                    self.attack_cooldown = self.default_attack_cooldown
+                    self.attack_cooldown = self.base_attack_cooldown
                 else:
                     self.attack_cooldown -= 1
             
@@ -200,7 +260,7 @@ class Wizard(Enemy):
         self.arrow_target = building
         self.arrow_pos = list(self.pos)
         self.arrow_active = True
-        self.attack_cooldown = self.default_attack_cooldown
+        self.attack_cooldown = self.base_attack_cooldown
     
     def updateArrow(self):
         if not self.arrow_active or self.arrow_target is None:

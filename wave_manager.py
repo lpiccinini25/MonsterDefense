@@ -1,6 +1,6 @@
 import pygame
 from globals import screen, GameInfo
-from Views.enemies import Ghoul, Golem, Wizard
+from Views.enemies import Ghoul, Golem, Wizard, GhoulModel, GolemModel, WizardModel
 import functions
 
 from random import randint
@@ -36,13 +36,13 @@ class WaveManager:
         self.spawn_distance: int = 300
 
     def spawn_ghoul(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
-        game_info.enemy_list.append(Ghoul("Ghoul", self.enemy_strength, pos))
+        game_info.enemy_list.append(Ghoul(GhoulModel(), self.enemy_strength, pos))
     
     def spawn_golem(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
-        game_info.enemy_list.append(Golem("Golem", self.enemy_strength, pos))
+        game_info.enemy_list.append(Golem(GolemModel(), self.enemy_strength, pos))
     
     def spawn_wizard(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
-        game_info.enemy_list.append(Wizard("Wizard", self.enemy_strength, pos))
+        game_info.enemy_list.append(Wizard(WizardModel(), self.enemy_strength, pos))
 
     def spawn_in_zone(self, game_info: GameInfo, spawn_zone_x: int, spawn_zone_y: int):
         if self.left_to_spawn > 0:
