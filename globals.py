@@ -4,7 +4,7 @@ pygame.init()
 screen = pygame.display.set_mode((950, 840))
 
 if TYPE_CHECKING:
-    from Views.towers import ArcherTower, BombTower
+    from Views.towers import ArcherTower, BombTower, TeslaTower
     from Views.buildings import House, TownHall
     from Views.playerabilities import Bomb
     from Views.enemies import Ghoul, Golem, Wizard, Enemy
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class GameInfo:
     def __init__(self):
-        self.tower_list: list[ArcherTower | BombTower] = []
+        self.tower_list: list[ArcherTower | BombTower | TeslaTower] = []
         self.building_list: list[House | TownHall] = []
         self.all_purchasables: list[ItemGroup] = []
         self.enemy_list: list[Enemy] = []
@@ -25,7 +25,8 @@ class GameInfo:
             'HouseCap' : 3,
             'BombTowerCap' : 1,
             'BombCap': 1,
-            'RepairCap': 1
+            'RepairCap': 1,
+            'TeslaTowerCap': 1
         }
     
     def update(self) -> None:

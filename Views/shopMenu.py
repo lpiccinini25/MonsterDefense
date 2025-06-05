@@ -5,7 +5,7 @@ from typing import Optional
 from globals import screen, GameInfo, ItemGroup
 import functions
 
-from Views.towers import ArcherTower, BombTower, ArcherTowerModel, BombTowerModel
+from Views.towers import ArcherTower, ArcherTowerModel, BombTower, BombTowerModel, TeslaTower, TeslaTowerModel
 from Views.buildings import House
 from Views.playerabilities import Bomb
 
@@ -51,10 +51,11 @@ class Shop:
         y: int = 50
         self.items: list[Item] = [
             Item(base, y, "Archer Tower", "ArcherTower", cost=2),
-            Item(base, y+inc, "House", "House", cost=2),
+            Item(base, y+inc, "Tesla Tower", "TeslaTower", cost=4),
             Item(base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
-            Item(base, y+inc*3, "Bomb", "Bomb", base_cooldown=2000),
-            Item(base, y+inc*4, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
+            Item(base, y+inc*3, "House", "House", cost=2),
+            Item(base, y+inc*4, "Bomb", "Bomb", base_cooldown=2000),
+            Item(base, y+inc*5, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
         ]
 
         self.items_owned: dict[str, int] = dict()
@@ -113,6 +114,8 @@ class Shop:
                         self.placing_item = False
                         self.item_being_placed = None
                         return
+                case "TeslaTower":
+                    game_info.tower_list.append(TeslaTower(TeslaTowerModel(), mouse_pos))
                     
             #update gold/cooldown depending on if a tower/ability.
             if item_cost is not None:

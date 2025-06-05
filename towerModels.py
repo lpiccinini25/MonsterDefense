@@ -5,16 +5,11 @@ class TowerModel:
         self.damage: int
         self.default_attack_cooldown: int
 
-class ArcherTowerLevel2(TowerModel):
-    def __init__(self):
-        self.title = "ArcherTowerLevel2"
-        self.range = 250
-        self.damage = 25
-        self.default_attack_cooldown = 90
-
 class TownHallLevel2(TowerModel):
     def __init__(self):
         self.title = "TownHallLevel2"
         self.ArcherTowerCap = 6
         self.HouseCap = 5
         self.BombTowerCap = 2
+        self.RepairCap = 2
+        self.TeslaTowerCap = 2

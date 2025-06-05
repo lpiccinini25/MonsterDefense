@@ -58,6 +58,23 @@ class BombTowerModel(TowerModel):
         #Broken/Repair
         self.base_repair_time: int = 2000
 
+class TeslaTowerModel(TowerModel):
+    def __init__(self):
+        #Image Info
+        self.size: int = 30
+
+        #Tower Info
+        self.title: str = "TeslaTower"
+
+        #Bomb Tower Stats
+        self.attack_range: int = 200
+        self.base_health: int = 200
+        self.damage: int = 20
+        self.base_attack_cooldown: int = 180
+
+        #Broken/Repair
+        self.base_repair_time: int = 2000
+
 
 class ArcherTowerLevel2(TowerModel):
     def __init__(self):
@@ -328,3 +345,123 @@ class BombTower(Tower):
         grey = Color(200, 200, 200)
         bomb_radius = 3
         pygame.draw.circle(screen, grey, self.arrow_pos, bomb_radius, width=0)
+
+class TeslaTower(Tower):
+    def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
+        super().__init__(tower_model, pos)
+        self.hover: pygame.Surface = self.image
+        self.hover = pygame.transform.scale(self.hover, (self.size, self.size))
+        self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
+
+        #Tesla Tower Stats
+        self.attack_cooldown: int = self.base_attack_cooldown
+
+        #Bolt Info
+        self.bolt_spread_radius: int = 100
+        self.base_bolt_spread_amount: int = 3
+        self.bolt_spread_amount: int = self.base_bolt_spread_amount
+        self.bolt_active: bool = False
+        self.bolt_pos: tuple[int, int] = self.pos[0], self.pos[1]
+        self.bolt_target: Optional[Enemy] = None
+        self.bolt_speed: int = 3
+
+        #Keep track of enemies already hit
+        self.not_hit: list[Enemy]
+
+        #Bolt Image
+        self.bolt_image: pygame.Surface = pygame.image.load("assets/ElectricBolt.png").convert()
+        self.bolt_image.set_colorkey((0, 0, 0))
+        self.bolt_image = pygame.transform.scale(self.bolt_image, (40, 40))
+        self.bolt_image_rect = self.bolt_image.get_rect(center=self.bolt_pos)
+    
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
+        self.draw((61, 64, 67))
+        enemy_list = game_info.enemy_list
+
+        #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
+        #change tower to not broken and reset hp to full, else, decrease repair_time left. 
+        if not self.broken:
+            if self.attack_cooldown > 0:
+                self.attack_cooldown -= 1
+            elif not self.bolt_active:
+               self.shoot_enemy(enemy_list)
+        else:
+            if self.repair_time <= 0:
+                self.broken = False
+                self.current_health = self.base_health
+                self.repair_time = self.base_repair_time
+            else:
+                self.repair_time -= 1
+        
+        #update bomb
+        self.update_bolt()
+
+        #see if clicked. important for upgrading
+        if functions.is_clicked_on(self.image_rect, event_list):
+            return True
+        
+        return False
+    
+
+    def shoot_enemy(self, enemy_list: list[Enemy]) -> None:
+        minDistance = self.attack_range
+        closest_enemy = None
+
+        #find the closest enemy within tower range
+        for enemy in enemy_list:
+            distance = functions.find_distance(self.pos, enemy.pos)
+
+            if distance <= minDistance:
+                minDistance = distance
+                closest_enemy = enemy
+        
+        #if enemy found in tower range, set the target to the closest one and launch arrow
+        if closest_enemy is not None:
+            self.bolt_target = closest_enemy
+            self.bolt_pos = self.pos
+            self.bolt_active = True
+            self.attack_cooldown = self.base_attack_cooldown
+            self.not_hit = enemy_list.copy()
+        
+    def update_bolt(self) -> None:
+        if not self.bolt_active or self.bolt_target is None:
+            return
+
+        dx = self.bolt_target.pos[0] - self.bolt_pos[0]
+        dy = self.bolt_target.pos[1] - self.bolt_pos[1]
+        distance = (dx**2 + dy**2) ** 0.5
+
+        #if bomb would overshoot/hit enemy, explode the bomb.
+        if distance < self.bolt_speed:
+
+            self.bolt_target.take_damage(self.damage)
+            self.bolt_target.slow_enemy(50, 60)
+            self.not_hit.remove(self.bolt_target)
+            #deal damage to all enemies that are within the explosion radius of the bomb at time of impact with main target
+
+
+            min_distance = self.bolt_spread_radius
+            closest_enemy = None
+            for enemy in self.not_hit:
+                distance = functions.find_distance(self.bolt_pos, enemy.pos)
+
+                if distance <= min_distance:
+                    min_distance = distance
+                    closest_enemy = enemy
+            
+            if closest_enemy is not None and self.bolt_spread_amount > 0:
+                self.bolt_spread_amount -= 1
+                self.bolt_target = closest_enemy
+            else:
+                self.bolt_spread_amount = self.base_bolt_spread_amount
+                self.bolt_target = None
+                self.bolt_active = False
+                self.bolt_pos = self.pos[0], self.pos[1]
+                return
+
+        dx_inc = round(dx / distance * self.bolt_speed)
+        dy_inc = round(dy / distance * self.bolt_speed)
+
+        self.bolt_pos = self.bolt_pos[0]+dx_inc, self.bolt_pos[1]+dy_inc
+
+        functions.display_image(self.bolt_image, self.bolt_pos[0], self.bolt_pos[1], 20)
