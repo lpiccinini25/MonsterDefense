@@ -4,7 +4,7 @@ from globals import screen
 from fonts import font
 import functions
 
-from towerModels import ArcherTowerLevel2, TownHallLevel2
+from Views.towers import ArcherTowerLevel2, TownHallLevel2
 
 class Upgrade:
     def __init__(self, x: int, y: int, upgradeName: str, upgradeModel, cost: int):
@@ -48,7 +48,7 @@ class UpgradeShop:
         mouse_pos = pygame.mouse.get_pos()
 
         for upgrade in self.upgrades:
-            if upgrade.rect.collidepoint(mouse_pos):
+            if upgrade.rect.collidepoint(mouse_pos): 
                 upgrade.curr_color = upgrade.hover_color
 
                 for event in event_list:
@@ -56,5 +56,3 @@ class UpgradeShop:
                         if game_info.gold >= upgrade.cost:
                             game_info.gold -= upgrade.cost
                             self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel, game_info)
-        
-                        

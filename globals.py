@@ -1,7 +1,7 @@
 import pygame
 from typing import Union, TYPE_CHECKING
 pygame.init()
-screen = pygame.display.set_mode((850, 700))
+screen = pygame.display.set_mode((950, 840))
 
 if TYPE_CHECKING:
     from Views.towers import ArcherTower, BombTower

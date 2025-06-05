@@ -38,11 +38,11 @@ class GhoulModel(EnemyModel):
         self.damage_scaling_factor: int = 14
         self.speed_scaling_factor: int = 4
 
-        self.start_damage: int = 15
+        self.start_damage: int = 10
         self.start_health: int = 40
         self.start_speed: int = 2
 
-        self.base_attack_cooldown: int = 60
+        self.base_attack_cooldown: int = 80
         self.attack_range: Optional[int] = None
 
 class GolemModel(EnemyModel):
@@ -59,7 +59,7 @@ class GolemModel(EnemyModel):
         self.start_health: int = 200
         self.start_speed: int = 1
 
-        self.base_attack_cooldown: int = 60
+        self.base_attack_cooldown: int = 80
         self.attack_range: Optional[int] = None
 
 class WizardModel(EnemyModel):
@@ -77,7 +77,7 @@ class WizardModel(EnemyModel):
         self.start_speed: int = 1
 
         self.base_attack_cooldown: int = 120
-        self.attack_range: Optional[int] = 150
+        self.attack_range: Optional[int] = 120
 
 
 class Enemy():
@@ -153,7 +153,7 @@ class Enemy():
         minDistance = 2000000
         closestBuilding = None
 
-        stepDistance = self.speed * 0.2 * ((100-self.slow_strength)/100)
+        stepDistance = self.speed * 0.1 * ((100-self.slow_strength)/100)
 
         for building in buildings:
             if building.broken:
@@ -222,7 +222,7 @@ class Wizard(Enemy):
         minDistance = 2000000
         closestBuilding = None
 
-        stepDistance = self.speed * 0.2 * (100-self.slow_strength)/100
+        stepDistance = self.speed * 0.1 * (100-self.slow_strength)/100
 
         for building in buildings:
             if building.broken:

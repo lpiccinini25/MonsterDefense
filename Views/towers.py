@@ -7,21 +7,88 @@ import functions
 from assetsHovered import hover_ArcherTower
 from Views.enemies import Enemy
 
-from towerModels import TowerModel
+class TowerModel:
+    def __init__(self):
+        #Image Info
+        self.size: int
+
+        #Tower Info
+        self.title: str
+
+        #Tower Stats
+        self.attack_range: int
+        self.base_health: int
+        self.damage: int
+        self.base_attack_cooldown: int
+
+        #Repair Stats
+        self.base_repair_time: int
+
+class ArcherTowerModel(TowerModel):
+    def __init__(self):
+        #Image Info
+        self.size: int = 30
+
+        #Tower Info
+        self.title: str = "ArcherTower"
+
+        #Tower Stats
+        self.attack_range: int = 200
+        self.base_health: int = 200
+        self.damage: int = 15
+        self.base_attack_cooldown: int = 100
+
+        #Repair Stats
+        self.base_repair_time: int = 2000
+
+class BombTowerModel(TowerModel):
+    def __init__(self):
+        #Image Info
+        self.size: int = 30
+
+        #Tower Info
+        self.title: str = "BombTower"
+
+        #Bomb Tower Stats
+        self.attack_range: int = 125
+        self.base_health: int = 150
+        self.damage: int = 30
+        self.base_attack_cooldown: int = 160
+
+        #Broken/Repair
+        self.base_repair_time: int = 2000
+
+
+class ArcherTowerLevel2(TowerModel):
+    def __init__(self):
+        self.title: str = "ArcherTowerLevel2"
+        self.attack_range: int = 250
+        self.damage: int = 25
+        self.base_attack_cooldown: int = 90
+
+class TownHallLevel2(TowerModel):
+    def __init__(self):
+        self.title = "TownHallLevel2"
+        self.ArcherTowerCap = 6
+        self.HouseCap = 5
+        self.BombTowerCap = 2
 
 class Tower(ItemGroup):
-    def __init__(self, title: str, pos: tuple[int, int]):
-        self.title: str = title
+    def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
+        #Tower Info
+        self.title: str = tower_model.title
         self.pos: tuple[int, int] = pos
         self.broken: bool = False
 
-        #Image
-        self.image: pygame.Surface = pygame.image.load("assets/"+title+".png").convert()
+        #Image Info
+        self.size: int = tower_model.size
+
+        self.image: pygame.Surface = pygame.image.load("assets/"+self.title+".png").convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
 
-        self.broken_image: pygame.Surface = pygame.image.load("assets/Broken"+title+".png").convert()
+        self.broken_image: pygame.Surface = pygame.image.load("assets/Broken"+self.title+".png").convert()
         self.broken_image.set_colorkey((0, 0, 0))
         self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
         self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
@@ -29,11 +96,17 @@ class Tower(ItemGroup):
         self.hover: pygame.Surface
         self.hover_rect: pygame.Rect
 
-        #Stats
-        self.current_health: int
-        self.base_health: int
-        self.repair_time: int
-        self.base_repair_time: int
+        #Tower Stats
+        self.attack_range: int = tower_model.attack_range
+        self.base_health: int = tower_model.base_health
+        self.current_health: int = self.base_health
+        self.damage: int = tower_model.damage
+        self.base_attack_cooldown: int = tower_model.base_attack_cooldown
+        self.attack_cooldown: int = self.base_attack_cooldown
+
+        #Repair Stats
+        self.base_repair_time: int = tower_model.base_repair_time
+        self.repair_time: int = self.base_repair_time
 
 
     def draw(self, health_bar_color: tuple[int, int, int]) -> None:
@@ -51,30 +124,21 @@ class Tower(ItemGroup):
             functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
 
     def upgradeTower(self, newImage: str, tower_model: TowerModel, game_info: GameInfo) -> None:
-        self.range = tower_model.range
         self.damage = tower_model.damage
-        self.default_attack_cooldown = tower_model.default_attack_cooldown
+        self.attack_range = tower_model.attack_range
+        self.base_attack_cooldown = tower_model.base_attack_cooldown
         self.image = pygame.image.load(newImage).convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.image_rect = self.image.get_rect(center=self.pos)
 
 class ArcherTower(Tower):
-    def __init__(self, title: str, pos: tuple[int, int]):
-        super().__init__(title, pos)
+    def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
+        super().__init__(tower_model, pos)
 
         self.hover: pygame.Surface = hover_ArcherTower
         self.hover = pygame.transform.scale(self.hover, (40, 40))
         self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
-
-        #Broken/Repair
-        self.base_repair_time: int = 2000
-        self.repair_time: int = self.base_repair_time
-
-        self.size: int = 30
-
-        self.base_health: int = 200
-        self.current_health: int = self.base_health
 
         #Arrow
         self.arrow_active: bool = False
@@ -82,12 +146,6 @@ class ArcherTower(Tower):
         self.endArrow_pos: tuple[int, int] = self.pos[0], self.pos[1]
         self.arrow_target: Optional[Enemy] = None
         self.arrow_speed: int = 5
-
-        #Archer Tower Stats
-        self.attack_cooldown_default: int = 100
-        self.attack_cooldown: int = self.attack_cooldown_default
-        self.range: int = 200
-        self.damage: int = 15
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
 
@@ -120,7 +178,7 @@ class ArcherTower(Tower):
 
 
     def shootEnemy(self, enemy_list: list[Enemy]) -> None:
-        minDistance = self.range
+        minDistance = self.attack_range
         closestEnemy = None
 
         #find the closest enemy within tower range
@@ -136,7 +194,7 @@ class ArcherTower(Tower):
             self.arrow_target = closestEnemy
             self.startArrow_pos = self.pos
             self.arrow_active = True
-            self.attack_cooldown = self.attack_cooldown_default
+            self.attack_cooldown = self.base_attack_cooldown
 
             dx = self.arrow_target.pos[0] - self.startArrow_pos[0]
             dy = self.arrow_target.pos[1] - self.startArrow_pos[1]
@@ -175,43 +233,21 @@ class ArcherTower(Tower):
 
 
 class BombTower(Tower):
-    def __init__(self, title: str, pos: tuple[int, int]):
-        super().__init__(title, pos)
+    def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
+        super().__init__(tower_model, pos)
         self.hover: pygame.Surface = self.image
-        self.hover = pygame.transform.scale(self.hover, (40, 40))
+        self.hover = pygame.transform.scale(self.hover, (self.size, self.size))
         self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
 
-        self.attack_cooldown_default: int = 180
-        self.attack_cooldown: int = self.attack_cooldown_default
+        #Bomb Tower Stats
+        self.attack_cooldown: int = self.base_attack_cooldown
+        self.explosion_radius: int = 20
 
         #Arrow Info
         self.arrow_active: bool = False
         self.arrow_pos: tuple[int, int] = self.pos[0], self.pos[1]
         self.arrow_target: Optional[Enemy] = None
         self.arrow_speed: int = 5
-
-        #Bomb Tower Stats
-        self.attack_cooldown_default = 180
-        self.attack_cooldown = self.attack_cooldown_default
-
-        self.damage: int = 30
-        self.range: int = 100
-
-        self.explosion_radius: int = 10
-
-        #Broken/Repair
-        self.base_repair_time: int = 2000
-        self.repair_time: int = self.base_repair_time
-
-        self.size: int = 30
-
-        self.broken_image: pygame.Surface = pygame.image.load("assets/BrokenBombTower.png").convert()
-        self.broken_image.set_colorkey((0, 0, 0))
-        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
-        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
-
-        self.base_health: int = 150
-        self.current_health: int = self.base_health
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
         self.draw((61, 64, 67))
@@ -243,7 +279,7 @@ class BombTower(Tower):
     
 
     def shootEnemy(self, enemy_list: list[Enemy]) -> None:
-        minDistance = self.range
+        minDistance = self.attack_range
         closestEnemy = None
 
         #find the closest enemy within tower range
@@ -259,7 +295,7 @@ class BombTower(Tower):
             self.arrow_target = closestEnemy
             self.arrow_pos = self.pos
             self.arrow_active = True
-            self.attack_cooldown = self.attack_cooldown_default
+            self.attack_cooldown = self.base_attack_cooldown
         
     def updateArrow(self, enemy_list: list[Enemy]) -> None:
         if not self.arrow_active or self.arrow_target is None:

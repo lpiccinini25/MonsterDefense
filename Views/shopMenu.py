@@ -5,7 +5,7 @@ from typing import Optional
 from globals import screen, GameInfo, ItemGroup
 import functions
 
-from Views.towers import ArcherTower, BombTower
+from Views.towers import ArcherTower, BombTower, ArcherTowerModel, BombTowerModel
 from Views.buildings import House
 from Views.playerabilities import Bomb
 
@@ -101,9 +101,9 @@ class Shop:
                     game_info.building_list.append(House(item_title, mouse_pos))
                 case "ArcherTower":
                     print('append')
-                    game_info.tower_list.append(ArcherTower(item_title, mouse_pos))
+                    game_info.tower_list.append(ArcherTower(ArcherTowerModel(), mouse_pos))
                 case "BombTower":
-                    game_info.tower_list.append(BombTower(item_title, mouse_pos))
+                    game_info.tower_list.append(BombTower(BombTowerModel(), mouse_pos))
                 case "Bomb":
                     game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
                 case "Repair":
