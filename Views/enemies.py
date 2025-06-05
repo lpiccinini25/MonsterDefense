@@ -20,26 +20,49 @@ class Enemy():
         self.speed: int
         self.attack_cooldown: int
         self.default_attack_cooldown: int
+
+        #Status Effects
+        self.on_click_slow_strength = 40
+        self.on_click_slow_duration = 50
+        self.slow_strength: int = 0
+        self.slow_duration: int = 0
     
     def draw(self) -> None:
         screen.blit(self.image, self.image_rect)
         health_bar_color = (255, 255, 255)
         functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
     
-    def update(self, game_info: GameInfo) -> None:
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> None:
+        self.on_click(event_list)
         self.moveAndAttack(game_info.all_purchasables)
+        self.update_slow_status()
 
     def take_damage(self, damage_taken: int) -> None:
         self.current_health -= damage_taken
     
     def attack(self, building: ItemGroup) -> None:
         building.take_damage(self.damage)
+    
+    def slow_enemy(self, slow_strength: int, slow_duration: int) -> None:
+        self.slow_strength = slow_strength
+        self.slow_duration = slow_duration
+    
+    def update_slow_status(self) -> None:
+        if self.slow_duration == 0:
+            self.slow_strength = 0
+        else:
+            self.slow_duration -= 1
+    
+    def on_click(self, event_list: list[pygame.event.Event]) -> None:
+        if functions.is_clicked_on(self.image_rect, event_list):
+            self.slow_enemy(self.on_click_slow_strength, self.on_click_slow_duration)
+            
 
     def moveAndAttack(self, buildings: list[ItemGroup]) -> None:
         minDistance = 2000000
         closestBuilding = None
 
-        stepDistance = self.speed * 0.2
+        stepDistance = self.speed * 0.2 * ((100-self.slow_strength)/100)
 
         for building in buildings:
             if building.broken:
@@ -128,15 +151,18 @@ class Wizard(Enemy):
         self.arrow_speed: int = 3
 
     
-    def update(self, game_info):
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> None:
+        self.on_click(event_list)
         self.moveAndAttack(game_info.all_purchasables)
         self.updateArrow()
+        self.update_slow_status()
+
 
     def moveAndAttack(self, buildings: list[ItemGroup]):
         minDistance = 2000000
         closestBuilding = None
 
-        stepDistance = self.speed * 0.2
+        stepDistance = self.speed * 0.2 * (100-self.slow_strength)/100
 
         for building in buildings:
             if building.broken:
@@ -175,9 +201,6 @@ class Wizard(Enemy):
         self.arrow_pos = list(self.pos)
         self.arrow_active = True
         self.attack_cooldown = self.default_attack_cooldown
-
-
-        building.take_damage(self.damage)
     
     def updateArrow(self):
         if not self.arrow_active or self.arrow_target is None:

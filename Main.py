@@ -145,7 +145,7 @@ class Main:
                     if randomNum < 31:
                         game_info.gold += 1
                     continue
-                enemy.update(game_info)
+                enemy.update(game_info, event_list)
                 enemy.draw()
 
 

@@ -27,9 +27,10 @@ class WaveManager:
         self.spawn_zone_h = 150
 
         #Spawn cooldowns
-        self.high_enemy_spawn_cooldown: int = 40
-        self.low_enemy_spawn_cooldown: int = 240
-        self.enemy_spawn_cooldown: int = self.low_enemy_spawn_cooldown
+        self.base_high_spawn_cooldown: int = 40
+        self.base_low_spawn_cooldown: int = 240
+        self.high_spawn_cooldown: int = self.base_high_spawn_cooldown
+        self.low_spawn_cooldown: int = self.base_low_spawn_cooldown
 
         #Spawn Restrictions
         self.spawn_distance: int = 300
@@ -45,7 +46,7 @@ class WaveManager:
 
     def spawn_in_zone(self, game_info: GameInfo, spawn_zone_x: int, spawn_zone_y: int):
         if self.left_to_spawn > 0:
-            if self.enemy_spawn_cooldown == 0:
+            if self.high_spawn_cooldown == 0:
                 spawn_pos = (randint(spawn_zone_x, spawn_zone_x+self.spawn_zone_w), randint(spawn_zone_y, spawn_zone_y+self.spawn_zone_h))
                 randNum = randint(1, 100)
                 if randNum < 60:
@@ -56,16 +57,16 @@ class WaveManager:
                     self.spawn_golem(game_info, spawn_pos)
 
                 self.left_to_spawn -= 1
-                self.enemy_spawn_cooldown = self.high_enemy_spawn_cooldown
+                self.high_spawn_cooldown = self.base_high_spawn_cooldown
             else:
-                self.enemy_spawn_cooldown -= 1
+                self.high_spawn_cooldown -= 1
         else:
             self.move_spawn_zone()
             self.number_of_enemies += 2
             self.left_to_spawn = self.number_of_enemies
             self.wave_number += 1
             self.low_enemy_spawn = True
-            self.low_enemy_spawn_cooldown = int(self.low_enemy_spawn_cooldown * 11/12)
+            self.base_low_spawn_cooldown = int(self.base_low_spawn_cooldown * 10/11)
 
     def move_spawn_zone(self) -> None:
         if self.wave_number % 2 == 0:
@@ -89,11 +90,11 @@ class WaveManager:
                 self.low_enemy_spawn = False
                 self.wave_duration = self.low_enemy_spawn_duration
 
-            if self.enemy_spawn_cooldown == 0:
+            if self.low_spawn_cooldown == 0:
                 distance = 0
                 while distance < self.spawn_distance:
                     spawn_pos = (randint(0, screen.get_width()), randint(0, screen.get_height()))
-                    middle_of_screen = [round(screen.get_width()/2), round(screen.get_height()/2)]
+                    middle_of_screen = screen.get_width()/2, round(screen.get_height()/2)
 
                     distance = functions.find_distance(spawn_pos, middle_of_screen)
 
@@ -104,14 +105,14 @@ class WaveManager:
                         else:
                             self.spawn_wizard(game_info, spawn_pos)
 
-                    self.enemy_spawn_cooldown = self.low_enemy_spawn_cooldown
-                    self.wave_duration -= 1
+                    self.low_spawn_cooldown = self.base_low_spawn_cooldown
             else:
-                self.enemy_spawn_cooldown -= 1
-                self.wave_duration -= 1
+                self.low_spawn_cooldown -= 1
     
     def update_wave(self, game_info: GameInfo) -> None:
         if self.low_enemy_spawn:
             self.spawn_random(game_info)
+            self.wave_duration -= 1
         else:
             self.spawn_in_zone(game_info, self.spawn_zone_x, self.spawn_zone_y)
+            self.spawn_random(game_info)

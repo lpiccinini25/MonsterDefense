@@ -8,8 +8,8 @@ class TowerModel:
 class ArcherTowerLevel2(TowerModel):
     def __init__(self):
         self.title = "ArcherTowerLevel2"
-        self.range = 275
-        self.damage = 30
+        self.range = 250
+        self.damage = 25
         self.default_attack_cooldown = 90
 
 class TownHallLevel2(TowerModel):
