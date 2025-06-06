@@ -1,14 +1,14 @@
 import functions
 
 import pygame
-from Views.shopMenu import Shop
-from Views.buildings import TownHall
+from views.item_shop import Shop
+from views.buildings import TownHall
 from globals import screen, GameInfo
-from Views.enemies import Ghoul, Golem, Wizard
+from views.enemies import Ghoul, Golem, Wizard
 from random import randint
 from fonts import font
 
-from Views.upgradeShop import UpgradeShop
+from views.upgrade_shop import UpgradeShop
 
 from pygame.locals import *
 

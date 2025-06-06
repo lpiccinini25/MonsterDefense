@@ -54,15 +54,3 @@ class Bomb(Ability):
         if self.is_exploding():
             self.explode(game_info.enemy_list)
             game_info.unattackable_list.remove(self)
-
-class Repair(Ability):
-    def __init__(self, title: str):
-        self.title: str = title
-        self.repair_amount: int = 150
-        
-
-        
-
-
-
-

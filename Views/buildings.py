@@ -17,7 +17,7 @@ class House(building):
     def __init__(self, title, pos):
         super().__init__(title, pos)
 
-        self.base_repair_time = 1400
+        self.base_repair_time = 2000
         self.repair_time = self.base_repair_time
 
         self.size = 30

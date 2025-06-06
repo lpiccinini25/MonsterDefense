@@ -4,7 +4,7 @@ from globals import screen
 from fonts import font
 import functions
 
-from Views.towers import ArcherTowerLevel2, TownHallLevel2
+from models.item_models import ArcherTowerLevel2, TownHallLevel2
 
 class Upgrade:
     def __init__(self, x: int, y: int, upgradeName: str, upgradeModel, cost: int):

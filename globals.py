@@ -4,10 +4,10 @@ pygame.init()
 screen = pygame.display.set_mode((950, 840))
 
 if TYPE_CHECKING:
-    from Views.towers import ArcherTower, BombTower, TeslaTower
-    from Views.buildings import House, TownHall
-    from Views.playerabilities import Bomb
-    from Views.enemies import Ghoul, Golem, Wizard, Enemy
+    from views.towers import ArcherTower, BombTower, TeslaTower
+    from views.buildings import House, TownHall
+    from views.player_abilities import Bomb
+    from views.enemies import Ghoul, Golem, Wizard, Enemy
 
 
 class GameInfo:

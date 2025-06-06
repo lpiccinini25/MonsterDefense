@@ -5,9 +5,10 @@ from typing import Optional
 from globals import screen, GameInfo, ItemGroup
 import functions
 
-from Views.towers import ArcherTower, ArcherTowerModel, BombTower, BombTowerModel, TeslaTower, TeslaTowerModel
-from Views.buildings import House
-from Views.playerabilities import Bomb
+from views.towers import ArcherTower, BombTower, TeslaTower
+from models.item_models import ArcherTowerModel, BombTowerModel, TeslaTowerModel
+from views.buildings import House
+from views.player_abilities import Bomb
 
 from fonts import font
 

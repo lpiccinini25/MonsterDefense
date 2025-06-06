@@ -1,6 +1,7 @@
 import pygame
 from globals import screen, GameInfo
-from Views.enemies import Ghoul, Golem, Wizard, GhoulModel, GolemModel, WizardModel
+from views.enemies import Ghoul, Golem, Wizard
+from models.enemy_models import GhoulModel, GolemModel, WizardModel
 import functions
 
 from random import randint
