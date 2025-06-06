@@ -18,6 +18,13 @@ class ArcherTowerLevel2(UpgradeModel):
         self.damage: int = 40
         self.base_attack_cooldown: int = 90
 
+class ArcherTowerLevel3(UpgradeModel):
+    def __init__(self):
+        self.title: str = "ArcherTowerLevel3"
+        self.attack_range: int = 250
+        self.damage: int = 70
+        self.base_attack_cooldown: int = 80
+
 
 class TeslaTowerLevel2(UpgradeModel):
     def __init__(self):

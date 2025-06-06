@@ -4,7 +4,7 @@ from globals import screen, ItemGroup
 from fonts import font
 import functions
 
-from models.upgrade_models import ArcherTowerLevel2, TeslaTowerLevel2, TownHallLevelUp, UpgradeModel
+from models.upgrade_models import ArcherTowerLevel2, ArcherTowerLevel3, TeslaTowerLevel2, TownHallLevelUp, UpgradeModel
 
 class Upgrade:
     def __init__(self, x: int, y: int, upgrade_name: str, upgrade_model: UpgradeModel, cost: int, current_item_level: int):
@@ -33,7 +33,8 @@ class UpgradeShop:
         match self.tower_instance.title:
             case "ArcherTower":
                 self.upgrades = [
-                    Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4, current_level)
+                    Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4, current_level),
+                    Upgrade(800, 80, "Level 3", ArcherTowerLevel3(), 15, current_level)
                 ]
             case "TownHall": 
                 self.upgrades = [
