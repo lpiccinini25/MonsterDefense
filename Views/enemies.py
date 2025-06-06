@@ -48,7 +48,7 @@ class Enemy():
     
     def draw(self) -> None:
         screen.blit(self.image, self.image_rect)
-        health_bar_color = (255, 255, 255)
+        health_bar_color = (255, 0, 0)
         functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> None:

@@ -7,6 +7,7 @@ import functions
 from hovered_assets import hover_ArcherTower
 from views.enemies import Enemy
 from models.item_models import TowerModel
+from models.upgrade_models import UpgradeModel
 
 class Tower(ItemGroup):
     def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
@@ -59,11 +60,11 @@ class Tower(ItemGroup):
             respawn_bar_color = (255, 255, 255)
             functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
 
-    def upgrade_tower(self, newImage: str, tower_model: TowerModel, game_info: GameInfo) -> None:
+    def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
         self.current_level += 1
-        self.damage = tower_model.damage
-        self.attack_range = tower_model.attack_range
-        self.base_attack_cooldown = tower_model.base_attack_cooldown
+        self.damage = upgrade_model.damage
+        self.attack_range = upgrade_model.attack_range
+        self.base_attack_cooldown = upgrade_model.base_attack_cooldown
         self.image = pygame.image.load(newImage).convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (40, 40))
@@ -86,7 +87,7 @@ class ArcherTower(Tower):
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
 
-        self.draw((255, 0, 0))
+        self.draw((255, 255, 255))
         enemy_list = game_info.enemy_list
  
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -187,7 +188,7 @@ class BombTower(Tower):
         self.arrow_speed: int = 5
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
-        self.draw((255, 0, 0))
+        self.draw((255, 255, 255))
         enemy_list = game_info.enemy_list
 
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -294,8 +295,21 @@ class TeslaTower(Tower):
         self.bolt_image = pygame.transform.scale(self.bolt_image, (40, 40))
         self.bolt_image_rect = self.bolt_image.get_rect(center=self.bolt_pos)
     
+    def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
+        self.current_level += 1
+        self.damage = upgrade_model.damage
+        self.attack_range = upgrade_model.attack_range
+        self.base_attack_cooldown = upgrade_model.base_attack_cooldown
+        if upgrade_model.bolt_spread_amount is None:
+            return
+        self.bolt_spread_amount = upgrade_model.bolt_spread_amount
+        self.image = pygame.image.load(newImage).convert()
+        self.image.set_colorkey((0, 0, 0))
+        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image_rect = self.image.get_rect(center=self.pos)
+    
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
-        self.draw((255, 0, 0))
+        self.draw((255, 255, 255))
         enemy_list = game_info.enemy_list
 
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so

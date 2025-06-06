@@ -60,7 +60,7 @@ class House(building):
     def draw(self):
         if not self.broken:
             screen.blit(self.image, self.image_rect)
-            health_bar_color = (255, 0, 0)
+            health_bar_color = (255, 255, 255)
             functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
         else:
             screen.blit(self.broken_image, self.broken_image_rect)
@@ -89,7 +89,7 @@ class TownHall(building):
     
     def draw(self):
         screen.blit(self.image, self.image_rect)
-        health_bar_color = (255, 0, 0)
+        health_bar_color = (255, 255, 255)
         functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color, override_size=50, override_gap=21)
         
     def upgrade_tower(self, newImage, tower_model, game_info):
