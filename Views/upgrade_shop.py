@@ -1,41 +1,43 @@
 import pygame
 from pygame import Color
-from globals import screen
+from globals import screen, ItemGroup
 from fonts import font
 import functions
 
-from models.item_models import ArcherTowerLevel2, TownHallLevel2
+from models.upgrade_models import ArcherTowerLevel2, TownHallLevelUp, UpgradeModel
 
 class Upgrade:
-    def __init__(self, x: int, y: int, upgradeName: str, upgradeModel, cost: int):
+    def __init__(self, x: int, y: int, upgrade_name: str, upgrade_model: UpgradeModel, cost: int, current_item_level: int):
         self.x = x
         self.y = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
         self.curr_color = Color(200, 100, 200)
         self.hover_color = Color(100, 100, 100)
         self.text_color = Color(255, 255, 255)
-        self.upgradeName = upgradeName
-        self.upgradeModel = upgradeModel
+        self.upgrade_name: str = upgrade_name
+        self.upgrade_model: UpgradeModel = upgrade_model
         self.cost = cost
         self.clicked = False
+        self.current_level = current_item_level
 
     def draw(self):
         self.rect.center = (self.x, self.y)
         pygame.draw.rect(screen, self.curr_color, self.rect)
-        functions.display_text(self.upgradeName + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+        functions.display_text(self.upgrade_name + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
 
 class UpgradeShop:
-    def __init__(self, towerInstance):
-        self.towerInstance = towerInstance
+    def __init__(self, tower_instance: ItemGroup):
+        self.tower_instance = tower_instance
+        current_level = self.tower_instance.current_level
 
-        match self.towerInstance.title:
+        match self.tower_instance.title:
             case "ArcherTower":
                 self.upgrades = [
-                    Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4)
+                    Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4, current_level)
                 ]
             case "TownHall": 
                 self.upgrades = [
-                    Upgrade(800, 50, "Level 2", TownHallLevel2(), 10)
+                    Upgrade(800, 50, "Level +1", TownHallLevelUp(), 10+current_level*5, current_level)
                 ]
             case _:
                 self.upgrades = []
@@ -55,4 +57,4 @@ class UpgradeShop:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         if game_info.gold >= upgrade.cost:
                             game_info.gold -= upgrade.cost
-                            self.towerInstance.upgradeTower("assets/"+upgrade.upgradeModel.title+".png", upgrade.upgradeModel, game_info)
+                            self.tower_instance.upgrade_tower("assets/"+upgrade.upgrade_model.title+".png", upgrade.upgrade_model, game_info)

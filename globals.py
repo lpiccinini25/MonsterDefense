@@ -41,6 +41,7 @@ class ItemGroup:
         self.base_health: int
         self.image: pygame.Surface
         self.image_rect: pygame.Rect
+        self.current_level: int
 
     def take_damage(self, damage_amount: int) -> None:
         self.current_health -= damage_amount

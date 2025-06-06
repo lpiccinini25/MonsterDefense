@@ -14,7 +14,8 @@ class WaveManager:
         self.wave_number: int = 1
         self.number_of_enemies: int = 6
         self.left_to_spawn: int = self.number_of_enemies
-        self.enemy_strength: int = self.wave_number
+        self.wave_number_multiplier: float = 0.3
+        self.enemy_strength: float = self.wave_number * self.wave_number_multiplier
 
         #Wave duration
         self.low_enemy_spawn_duration: int = 2700
@@ -37,6 +38,7 @@ class WaveManager:
         self.spawn_distance: int = 300
 
     def spawn_ghoul(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
+        print(self.enemy_strength)
         game_info.enemy_list.append(Ghoul(GhoulModel(), self.enemy_strength, pos))
     
     def spawn_golem(self, game_info: GameInfo, pos: tuple[int, int]) -> None:
@@ -66,6 +68,7 @@ class WaveManager:
             self.number_of_enemies += 2
             self.left_to_spawn = self.number_of_enemies
             self.wave_number += 1
+            self.enemy_strength = self.wave_number*self.wave_number_multiplier
             self.low_enemy_spawn = True
             self.base_low_spawn_cooldown = int(self.base_low_spawn_cooldown * 10/11)
 

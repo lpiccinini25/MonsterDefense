@@ -14,6 +14,7 @@ class Tower(ItemGroup):
         self.title: str = tower_model.title
         self.pos: tuple[int, int] = pos
         self.broken: bool = False
+        self.current_level: int = 1
 
         #Image Info
         self.size: int = tower_model.size
@@ -58,7 +59,8 @@ class Tower(ItemGroup):
             respawn_bar_color = (255, 255, 255)
             functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
 
-    def upgradeTower(self, newImage: str, tower_model: TowerModel, game_info: GameInfo) -> None:
+    def upgrade_tower(self, newImage: str, tower_model: TowerModel, game_info: GameInfo) -> None:
+        self.current_level += 1
         self.damage = tower_model.damage
         self.attack_range = tower_model.attack_range
         self.base_attack_cooldown = tower_model.base_attack_cooldown
@@ -84,7 +86,7 @@ class ArcherTower(Tower):
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
 
-        self.draw((168, 96, 216))
+        self.draw((255, 0, 0))
         enemy_list = game_info.enemy_list
  
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -185,7 +187,7 @@ class BombTower(Tower):
         self.arrow_speed: int = 5
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
-        self.draw((61, 64, 67))
+        self.draw((255, 0, 0))
         enemy_list = game_info.enemy_list
 
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -293,7 +295,7 @@ class TeslaTower(Tower):
         self.bolt_image_rect = self.bolt_image.get_rect(center=self.bolt_pos)
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
-        self.draw((61, 64, 67))
+        self.draw((255, 0, 0))
         enemy_list = game_info.enemy_list
 
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so

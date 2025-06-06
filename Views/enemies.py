@@ -9,12 +9,12 @@ from models.enemy_models import EnemyModel
 
 
 class Enemy():
-    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[float, float]):
+    def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[float, float]):
 
         enemy_name = enemy_model.title
 
         self.pos: tuple[float, float] = pos
-        self.scaling: int = scaling
+        self.scaling: float = scaling**2
         self.size: int = enemy_model.size
         self.image: pygame.Surface = pygame.image.load("assets/"+enemy_name+".png").convert()
         self.image.set_colorkey((0, 0, 0))
@@ -116,19 +116,19 @@ class Enemy():
                 self.image_rect = self.image.get_rect(center=self.pos)
 
 class Ghoul(Enemy):
-    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[int, int]):
+    def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[int, int]):
         super().__init__(enemy_model, scaling, pos)
         self.size: int = 25
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
 class Golem(Enemy):
-    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[int, int]):
+    def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[int, int]):
         super().__init__(enemy_model, scaling, pos)
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
 
 class Wizard(Enemy):
-    def __init__(self, enemy_model: EnemyModel, scaling: int, pos: tuple[int, int]):
+    def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[int, int]):
         super().__init__(enemy_model, scaling, pos)
         self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
@@ -208,8 +208,7 @@ class Wizard(Enemy):
         dx_inc = dx / distance * self.arrow_speed
         dy_inc = dy / distance * self.arrow_speed
 
-        self.arrow_pos[0] += dx_inc
-        self.arrow_pos[1] += dy_inc
+        self.arrow_pos = self.arrow_pos[0]+dx_inc, self.arrow_pos[1]+dy_inc
 
         grey = Color(255, 255, 255)
         bomb_radius = 3

@@ -13,6 +13,8 @@ class building(ItemGroup):
         self.image = pygame.image.load("assets/"+title+".png")
         self.image.set_colorkey((0, 0, 0))
 
+        self.current_level: int = 1
+
 class House(building):
     def __init__(self, title, pos):
         super().__init__(title, pos)
@@ -58,7 +60,7 @@ class House(building):
     def draw(self):
         if not self.broken:
             screen.blit(self.image, self.image_rect)
-            health_bar_color = (158, 87, 34)
+            health_bar_color = (255, 0, 0)
             functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
         else:
             screen.blit(self.broken_image, self.broken_image_rect)
@@ -87,15 +89,18 @@ class TownHall(building):
     
     def draw(self):
         screen.blit(self.image, self.image_rect)
-        health_bar_color = (255, 215, 0)
+        health_bar_color = (255, 0, 0)
         functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color, override_size=50, override_gap=21)
         
-    def upgradeTower(self, newImage, towerModel, game_info):
-        game_info.caps['ArcherTowerCap'] = towerModel.ArcherTowerCap
-        game_info.caps['HouseCap'] = towerModel.HouseCap
-        game_info.caps['BombTowerCap'] = towerModel.BombTowerCap
+    def upgrade_tower(self, newImage, tower_model, game_info):
+        game_info.caps['ArcherTowerCap'] += 2
+        game_info.caps['HouseCap'] += 2
+        game_info.caps['BombTowerCap'] += 1
+        game_info.caps['TeslaTowerCap'] += 1
 
         self.image = pygame.image.load(newImage).convert()
         self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (75, 75))
         self.image_rect = self.image.get_rect(center=self.pos)
+
+        self.current_level += 1

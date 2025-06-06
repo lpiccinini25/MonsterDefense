@@ -13,7 +13,7 @@ from views.player_abilities import Bomb
 from fonts import font
 
 class Item:
-    def __init__(self, x: int, y: int, text: str, title: str, cost: Optional[int]=None, base_cooldown: Optional[int]=None, repair_amount: Optional[int]=None):
+    def __init__(self, game_info: GameInfo, x: int, y: int, text: str, title: str, cost: Optional[int]=None, base_cooldown: Optional[int]=None, repair_amount: Optional[int]=None):
         self.x: int = x
         self.y: int = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
@@ -29,10 +29,12 @@ class Item:
         self.repair_amount: Optional[int] = repair_amount
 
         #Item Image
+        self.cap = game_info.caps[title+"Cap"]
         self.base_image: pygame.Surface = pygame.image.load("assets/"+self.title+".png").convert()
 
-    def draw(self, amount_owned: int) -> None:
+    def draw(self, game_info: GameInfo, amount_owned: int) -> None:
         self.rect.center = (self.x, self.y)
+        self.cap = game_info.caps[self.title+"Cap"]
         pygame.draw.rect(screen, self.curr_color, self.rect)
 
         #if costs money display price, if is cooldown based show cooldown
@@ -40,7 +42,7 @@ class Item:
             functions.display_text(self.text + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
         elif self.cooldown is not None:
             functions.display_text(self.text + " cooldown is: " + str(self.cooldown) + " seconds.", self.text_color, font, self.x, self.y)
-        functions.display_text("Owned: " + str(amount_owned), (255, 255, 255), font, self.x+80, self.y)
+        functions.display_text("Owned: " + str(amount_owned) + "/"+str(self.cap), (255, 255, 255), font, self.x+90, self.y)
 
 class Shop:
     def __init__(self, game_info: GameInfo):
@@ -51,20 +53,20 @@ class Shop:
         base: int = 75
         y: int = 50
         self.items: list[Item] = [
-            Item(base, y, "Archer Tower", "ArcherTower", cost=2),
-            Item(base, y+inc, "Tesla Tower", "TeslaTower", cost=4),
-            Item(base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
-            Item(base, y+inc*3, "House", "House", cost=2),
-            Item(base, y+inc*4, "Bomb", "Bomb", base_cooldown=2000),
-            Item(base, y+inc*5, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
+            Item(game_info, base, y, "Archer Tower", "ArcherTower", cost=2),
+            Item(game_info, base, y+inc, "Tesla Tower", "TeslaTower", cost=4),
+            Item(game_info, base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
+            Item(game_info, base, y+inc*3, "House", "House", cost=2,),
+            Item(game_info, base, y+inc*4, "Bomb", "Bomb", base_cooldown=2000),
+            Item(game_info, base, y+inc*5, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
         ]
 
         self.items_owned: dict[str, int] = dict()
 
-    def draw_items(self) -> None:
+    def draw_items(self, game_info: GameInfo) -> None:
         for item in self.items:
             amount_owned = self.items_owned[item.title]
-            item.draw(amount_owned)
+            item.draw(game_info, amount_owned)
     
     def draw_item_being_placed(self) -> None:
         if self.item_being_placed is None:
@@ -151,7 +153,7 @@ class Shop:
         self.update_items_owned(game_info)
 
         #draw items
-        self.draw_items()
+        self.draw_items(game_info)
 
         #If item was clicked previously, begin drawing that image at ur mouse pos. 
         if self.placing_item:
