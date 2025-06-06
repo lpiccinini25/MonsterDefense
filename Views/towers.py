@@ -276,10 +276,13 @@ class TeslaTower(Tower):
 
         #Tesla Tower Stats
         self.attack_cooldown: int = self.base_attack_cooldown
+        self.bolt_slow_duration: int = 100
+        self.bolt_slow_power: int = 60
+
 
         #Bolt Info
         self.bolt_spread_radius: int = 100
-        self.base_bolt_spread_amount: int = 3
+        self.base_bolt_spread_amount: int = 8
         self.bolt_spread_amount: int = self.base_bolt_spread_amount
         self.bolt_active: bool = False
         self.bolt_pos: tuple[int, int] = self.pos[0], self.pos[1]
@@ -369,7 +372,7 @@ class TeslaTower(Tower):
         if distance < self.bolt_speed:
 
             self.bolt_target.take_damage(self.damage)
-            self.bolt_target.slow_enemy(50, 60)
+            self.bolt_target.slow_enemy(self.bolt_slow_power, self.bolt_slow_duration)
             self.not_hit.remove(self.bolt_target)
             #deal damage to all enemies that are within the explosion radius of the bomb at time of impact with main target
 

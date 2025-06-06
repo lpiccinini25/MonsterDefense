@@ -31,7 +31,9 @@ class Enemy():
         damage_high_bound: int = int(enemy_model.start_damage+self.scaling*enemy_model.damage_scaling_factor*(1))
         self.damage: int = random.randint(damage_low_bound, damage_high_bound)
         #Speed
-        speed_low_bound: int = int(enemy_model.start_speed+self.scaling*enemy_model.speed_scaling_factor*(0.5))
+        #Speed_scaling bc exponential increase in speed looks dumb
+        speed_scaling: float = self.scaling**(0.5)
+        speed_low_bound: int = int(enemy_model.start_speed+speed_scaling*enemy_model.speed_scaling_factor*(0.5))
         speed_high_bound: int = int(enemy_model.start_speed+self.scaling*enemy_model.speed_scaling_factor*(1))
         self.speed: int = random.randint(speed_low_bound, speed_high_bound)
         #Attack Cooldown

@@ -48,6 +48,10 @@ class Shop:
     def __init__(self, game_info: GameInfo):
         self.placing_item: bool = False
         self.item_being_placed: Optional[Item] = None
+        self.min_distance_between_items: int = 35
+        self.placed_too_close: bool = False
+        self.placed_too_close_warning_base_duration: int = 120
+        self.placed_too_close_warning_duration: int = self.placed_too_close_warning_base_duration
 
         inc: int = 60
         base: int = 75
@@ -62,6 +66,15 @@ class Shop:
         ]
 
         self.items_owned: dict[str, int] = dict()
+    
+    def update_placed_too_close_warning(self) -> None:
+        if self.placed_too_close:
+            if self.placed_too_close_warning_duration <= 0:
+                self.placed_too_close = False
+                self.placed_too_close_warning_duration = self.placed_too_close_warning_base_duration
+            else:
+                functions.display_text("Placed too close to another tower", (255, 255, 255), font, int(screen.get_width()/2), 50)
+                self.placed_too_close_warning_duration -= 1
 
     def draw_items(self, game_info: GameInfo) -> None:
         for item in self.items:
@@ -88,6 +101,17 @@ class Shop:
         for owned in all_items_owned:
             if not owned.title == "TownHall":
                 self.items_owned[owned.title] += 1
+    
+    def append_if_possible(self, list_to_append_to: list[ItemGroup], game_info: GameInfo, to_place: ItemGroup, cost: int) -> None:
+        all_items = game_info.all_purchasables
+        for item in all_items:
+            distance = functions.find_distance(item.pos, to_place.pos)
+            if not distance > self.min_distance_between_items:
+                self.placed_too_close = True
+                return
+        game_info.gold -= cost
+        list_to_append_to.append(to_place)
+
 
     def check_place_item(self, event_list: list[pygame.event.Event], game_info: GameInfo) -> None:
         if self.item_being_placed is None:
@@ -98,16 +122,19 @@ class Shop:
             item_being_placed = self.item_being_placed
             item_title = item_being_placed.title
             item_cost = item_being_placed.cost
+            building_list = game_info.building_list
+            tower_list = game_info.tower_list
     
             #if left click, place item at mouse position and append an item instance to corresponding list
             match item_title:
                 case "House":
-                    game_info.building_list.append(House(item_title, mouse_pos))
+                    self.append_if_possible(building_list, game_info, House(item_title, mouse_pos), item_cost)
                 case "ArcherTower":
-                    print('append')
-                    game_info.tower_list.append(ArcherTower(ArcherTowerModel(), mouse_pos))
+                    self.append_if_possible(tower_list, game_info, ArcherTower(ArcherTowerModel(), mouse_pos), item_cost)
                 case "BombTower":
-                    game_info.tower_list.append(BombTower(BombTowerModel(), mouse_pos))
+                    self.append_if_possible(tower_list, game_info, BombTower(BombTowerModel(), mouse_pos), item_cost)
+                case "TeslaTower":
+                    self.append_if_possible(tower_list, game_info, TeslaTower(TeslaTowerModel(), mouse_pos), item_cost)
                 case "Bomb":
                     game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
                 case "Repair":
@@ -117,14 +144,10 @@ class Shop:
                         self.placing_item = False
                         self.item_being_placed = None
                         return
-                case "TeslaTower":
-                    game_info.tower_list.append(TeslaTower(TeslaTowerModel(), mouse_pos))
-                    
+            
+            if self.item_being_placed.base_cooldown is not None:
+                self.item_being_placed.cooldown = self.item_being_placed.base_cooldown
             #update gold/cooldown depending on if a tower/ability.
-            if item_cost is not None:
-                game_info.gold -= item_cost
-            elif item_being_placed.base_cooldown is not None:
-                item_being_placed.cooldown = item_being_placed.base_cooldown
 
             self.placing_item = False
             self.item_being_placed = None
@@ -154,6 +177,9 @@ class Shop:
 
         #draw items
         self.draw_items(game_info)
+
+        #display warning if item placement canceled due to being too close to another tower
+        self.update_placed_too_close_warning()
 
         #If item was clicked previously, begin drawing that image at ur mouse pos. 
         if self.placing_item:

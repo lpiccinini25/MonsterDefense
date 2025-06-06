@@ -14,7 +14,7 @@ class WaveManager:
         self.wave_number: int = 1
         self.number_of_enemies: int = 6
         self.left_to_spawn: int = self.number_of_enemies
-        self.wave_number_multiplier: float = 0.3
+        self.wave_number_multiplier: float = 0.22
         self.enemy_strength: float = self.wave_number * self.wave_number_multiplier
 
         #Wave duration
@@ -71,6 +71,7 @@ class WaveManager:
             self.enemy_strength = self.wave_number*self.wave_number_multiplier
             self.low_enemy_spawn = True
             self.base_low_spawn_cooldown = int(self.base_low_spawn_cooldown * 10/11)
+            self.low_enemy_spawn_duration = int(self.low_enemy_spawn_duration * 11/12)
 
     def move_spawn_zone(self) -> None:
         if self.wave_number % 2 == 0:
