@@ -16,7 +16,7 @@ Features:
 * Upgrade system with unlockable tower levels
 * Full in-game economy with purchasing, placement logic, and cooldown management
 
-#To Run
+# To Play For Yourself -- 
 # Clone repo
 git clone https://github.com/username/MonsterDefense.git
 
