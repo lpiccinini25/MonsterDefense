@@ -35,6 +35,11 @@ def display_text(text: str, color: tuple[int, int, int], font: pygame.font.Font,
     text_rect = text_surface.get_rect(center=(x, y))
     screen.blit(text_surface, text_rect)
 
+def display_rect(x: int, y: int, w: int, h: int, color: tuple[int, int, int]) -> None:
+    rect = pygame.Rect(x, y, w, h)
+    rect.center = (x, y)
+    pygame.draw.rect(screen, color, rect)
+
 def display_image(image: pygame.Surface, x: int, y: int, scaling: int) -> None:
     image.set_colorkey((0, 0, 0))
     image = pygame.transform.scale(image, (scaling, scaling))

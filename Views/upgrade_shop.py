@@ -1,48 +1,70 @@
 import pygame
 from pygame import Color
-from globals import screen, ItemGroup
+from globals import screen, ItemGroup, GameInfo
 from fonts import font
 import functions
 
 from models.upgrade_models import ArcherTowerLevel2, ArcherTowerLevel3, TeslaTowerLevel2, TownHallLevelUp, UpgradeModel
 
 class Upgrade:
-    def __init__(self, x: int, y: int, upgrade_name: str, upgrade_model: UpgradeModel, cost: int, current_item_level: int):
+    def __init__(self, x: int, y: int, upgrade_name: str, upgrade_model: UpgradeModel, current_item_level: int):
+
+        #Image
         self.x = x
         self.y = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
+        self.rect.center = (self.x, self.y)
         self.curr_color = Color(200, 100, 200)
+        self.cannot_buy_color = Color(50, 50, 50)
         self.hover_color = Color(100, 100, 100)
         self.text_color = Color(255, 255, 255)
+
+        #Basic Info
         self.upgrade_name: str = upgrade_name
         self.upgrade_model: UpgradeModel = upgrade_model
-        self.cost = cost
+        self.cost = upgrade_model.cost
+        self.upgrade_level = upgrade_model.level
         self.clicked = False
-        self.current_level = current_item_level
+        self.current_item_level = current_item_level
+
+        #State
+        self.can_buy: bool = False
 
     def draw(self):
-        self.rect.center = (self.x, self.y)
-        pygame.draw.rect(screen, self.curr_color, self.rect)
-        functions.display_text(self.upgrade_name + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+        if self.can_buy:
+            pygame.draw.rect(screen, self.curr_color, self.rect)
+            functions.display_text(self.upgrade_name + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+        else:
+            pygame.draw.rect(screen, self.cannot_buy_color, self.rect)
+            functions.display_text(self.upgrade_name + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+
+    def check_can_buy(self, game_info: GameInfo) -> None:
+        if game_info.gold >= self.cost and self.upgrade_level == self.current_item_level + 1:
+            self.can_buy = True
+        else:
+            self.can_buy = False
+
 
 class UpgradeShop:
     def __init__(self, tower_instance: ItemGroup):
         self.tower_instance = tower_instance
         current_level = self.tower_instance.current_level
 
+        y_base = 50
+        y_inc = 55
         match self.tower_instance.title:
             case "ArcherTower":
                 self.upgrades = [
-                    Upgrade(800, 50, "Level 2", ArcherTowerLevel2(), 4, current_level),
-                    Upgrade(800, 80, "Level 3", ArcherTowerLevel3(), 15, current_level)
+                    Upgrade(800, y_base, "Level 2", ArcherTowerLevel2(), current_level),
+                    Upgrade(800, y_base+y_inc, "Level 3", ArcherTowerLevel3(), current_level)
                 ]
             case "TownHall": 
                 self.upgrades = [
-                    Upgrade(800, 50, "Level +1", TownHallLevelUp(), 10+current_level*5, current_level)
+                    Upgrade(800, y_base, "Level +1", TownHallLevelUp(current_level), current_level)
                 ]
             case "TeslaTower":
                 self.upgrades = [
-                    Upgrade(800, 50, "Level 2", TeslaTowerLevel2(), 8, current_level)
+                    Upgrade(800, y_base, "Level 2", TeslaTowerLevel2(), current_level)
                 ]
             case _:
                 self.upgrades = []
@@ -55,11 +77,12 @@ class UpgradeShop:
         mouse_pos = pygame.mouse.get_pos()
 
         for upgrade in self.upgrades:
+            upgrade.check_can_buy(game_info)
             if upgrade.rect.collidepoint(mouse_pos): 
                 upgrade.curr_color = upgrade.hover_color
 
                 for event in event_list:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        if game_info.gold >= upgrade.cost:
+                        if upgrade.can_buy:
                             game_info.gold -= upgrade.cost
                             self.tower_instance.upgrade_tower("assets/"+upgrade.upgrade_model.title+".png", upgrade.upgrade_model, game_info)

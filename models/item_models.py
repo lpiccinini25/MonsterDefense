@@ -60,7 +60,7 @@ class TeslaTowerModel(TowerModel):
         #Bomb Tower Stats
         self.attack_range: int = 150
         self.base_health: int = 200
-        self.damage: int = 20
+        self.damage: int = 10
         self.base_attack_cooldown: int = 180
 
         #Broken/Repair

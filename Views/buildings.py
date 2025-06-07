@@ -33,7 +33,7 @@ class House(building):
 
         self.base_health = 100
         self.current_health = self.base_health
-        self.defaultGoldGenerationCoolDown = 900
+        self.defaultGoldGenerationCoolDown = 1000
         self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
 
     def update(self, game_info, event_list):

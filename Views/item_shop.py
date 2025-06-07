@@ -81,12 +81,18 @@ class Shop:
             amount_owned = self.items_owned[item.title]
             item.draw(game_info, amount_owned)
     
-    def draw_item_being_placed(self) -> None:
+    def draw_item_being_placed(self, game_info) -> None:
         if self.item_being_placed is None:
             return
         else:
             #blit the image of the item being placed at ur mouse position
             mouse_pos = pygame.mouse.get_pos()
+            if self.too_close(game_info, mouse_pos):
+                functions.display_rect(int(screen.get_width()/2), 50, 100, 50, (255, 0, 0))
+                functions.display_text("Too Close!", (0, 0, 0), font, int(screen.get_width()/2), 50)
+            else:
+                functions.display_rect(int(screen.get_width()/2), 50, 100, 50, (0, 255, 0))
+                functions.display_text("Ok!", (0, 0, 0), font, int(screen.get_width()/2), 50)
             functions.display_image(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1], 40)
     
     def update_items_owned(self, game_info: GameInfo) -> None:
@@ -102,13 +108,18 @@ class Shop:
             if not owned.title == "TownHall":
                 self.items_owned[owned.title] += 1
     
-    def append_if_possible(self, list_to_append_to: list[ItemGroup], game_info: GameInfo, to_place: ItemGroup, cost: int) -> None:
+    def too_close(self, game_info: GameInfo, item_cord: tuple[int, int]) -> bool:
         all_items = game_info.all_purchasables
         for item in all_items:
-            distance = functions.find_distance(item.pos, to_place.pos)
+            distance = functions.find_distance(item.pos, item_cord)
             if not distance > self.min_distance_between_items:
-                self.placed_too_close = True
-                return
+                return True
+        return False
+    
+    def append_if_possible(self, list_to_append_to: list[ItemGroup], game_info: GameInfo, to_place: ItemGroup, cost: int) -> None:
+        if self.too_close(game_info, to_place.pos):
+            self.placed_too_close = True
+            return
         game_info.gold -= cost
         list_to_append_to.append(to_place)
 
@@ -183,7 +194,7 @@ class Shop:
 
         #If item was clicked previously, begin drawing that image at ur mouse pos. 
         if self.placing_item:
-            self.draw_item_being_placed()
+            self.draw_item_being_placed(game_info)
             self.check_place_item(event_list, game_info)
     
 

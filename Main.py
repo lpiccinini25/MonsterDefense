@@ -126,8 +126,8 @@ class Main:
 
             if towerUpgrading:
                 upgradeShop = UpgradeShop(towerInstanceUpgrading)
-                upgradeShop.drawShop()
                 upgradeShop.updateUpgrades(event_list, game_info)
+                upgradeShop.drawShop()
 
                 if functions.is_clicked_elsewhere(towerInstanceUpgrading.image_rect, event_list):
                     towerUpgrading = False
