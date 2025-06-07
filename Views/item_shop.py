@@ -2,7 +2,7 @@ import pygame
 from pygame import Color
 from typing import Optional
 
-from globals import screen, GameInfo, ItemGroup, height, width
+from globals import screen, GameInfo, ItemGroup
 import functions
 
 from views.towers import ArcherTower, BombTower, TeslaTower
