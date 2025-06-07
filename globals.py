@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from views.player_abilities import Bomb
     from views.enemies import Ghoul, Golem, Wizard, Enemy
 
+height = screen.get_height()
+width = screen.get_width()
 
 class GameInfo:
     def __init__(self):

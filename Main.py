@@ -3,7 +3,7 @@ import functions
 import pygame
 from views.item_shop import Shop
 from views.buildings import TownHall
-from globals import screen, GameInfo
+from globals import screen, GameInfo, height, width
 from views.enemies import Ghoul, Golem, Wizard
 from random import randint
 from fonts import font
@@ -17,6 +17,7 @@ from wave_manager import WaveManager
 class Main:
     def __init__(self):
         pygame.init()
+        self.state = "START_SCREEN"
 
     def button(self, x, y, w, h, text, color, hover_color, text_color, text_font):
         rect = pygame.Rect(x, y, w, h)
@@ -34,15 +35,52 @@ class Main:
 
     def mainGameLoop(self):
         while True:
-            self.run()
-            self.end_screen()
+            if self.state == "START_SCREEN":
+                self.start_screen()
+            elif self.state == "RUN_GAME":
+                self.run()
+            elif self.state == "END_SCREEN":
+                self.end_screen()
+
+    def start_screen(self):
+        start_screen = True
+
+        clock = pygame.time.Clock()
+
+        while start_screen:
+
+            screen.fill((0,0,0))
+            event_list = pygame.event.get()
+            for event in event_list:
+                if event.type == QUIT:
+                    pygame.quit()
+                    return
+            clock.tick(60)
+
+            if self.button(width*2/6, height*4/5, 100, 50, "Start a Game!", (0, 200, 0), (0, 220, 0), (0, 0, 0), font):
+                start_screen = False
+                self.state = "RUN_GAME"
+
+            pygame.display.update()
 
     def run(self):
 
-        #Images Preloaded
-        tombstone_image = pygame.image.load("assets/Tombstone.png").convert()
 
         clock = pygame.time.Clock()
+        def pause_screen() -> None:
+            paused = True
+            while paused:
+                event_list = pygame.event.get()
+                for event in event_list:
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                        paused = False
+                clock.tick(60)
+                functions.display_rect(int(width/2), int(height/2), 200, 200, (100, 100, 100))
+                functions.display_text("Paused! Press Escape To Return", (255, 255, 255), font, int(width/2), int(height/2))
+                pygame.display.update()
+
+        #Images Preloaded
+        tombstone_image = pygame.image.load("assets/Tombstone.png").convert()
 
         run_game = True
         placing = False
@@ -71,16 +109,10 @@ class Main:
                 if event.type == QUIT:
                     pygame.quit()
                     return
-                elif event.type == MOUSEWHEEL:
-                    print(event)
-                    print(event.x, event.y)
-                    print(event.flipped)
-                    print(event.which)
-                    # can access properties with
-                    # proper notation(ex: event.y)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    pause_screen()
+                    
             clock.tick(60)
-
-
             #if item is in process of being placed, constantly check if user presses mouse. cannot place over buttons.
 
             #Player Stuff/Important Info Displaying
@@ -108,6 +140,7 @@ class Main:
             for purchasable in game_info.all_purchasables:
                 if purchasable.current_health <= 0:
                     if purchasable.title == "TownHall":
+                        self.state = "END_SCREEN"
                         run_game = False
                 if purchasable.update(game_info, event_list):
                     towerUpgrading = True
@@ -179,6 +212,7 @@ class Main:
 
             if self.button(screen_width*2/6, screen_height*4/5, 100, 50, "Try Again!", (0, 200, 0), (0, 220, 0), (0, 0, 0), font):
                 end_screen = False
+                self.state = "RUN_GAME"
 
             pygame.display.update()
 
