@@ -186,13 +186,13 @@ class Wizard(Enemy):
                 self.pos = (new_x, new_y)
                 self.image_rect = self.image.get_rect(center=self.pos)
         
-    def attack(self, building) -> None:
+    def attack(self, building: ItemGroup) -> None:
         self.arrow_target = building
         self.arrow_pos = self.pos
         self.arrow_active = True
         self.attack_cooldown = self.base_attack_cooldown
     
-    def updateArrow(self):
+    def updateArrow(self) -> None:
         if not self.arrow_active or self.arrow_target is None:
             return
 
@@ -204,7 +204,7 @@ class Wizard(Enemy):
             self.arrow_active = False 
 
             self.arrow_target.take_damage(self.damage)
-            self.arrow_pos = [self.pos[0], self.pos[1]]
+            self.arrow_pos = self.pos[0], self.pos[1]
             return
 
         dx_inc = dx / distance * self.arrow_speed

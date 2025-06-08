@@ -136,25 +136,28 @@ class Shop:
             building_list = game_info.building_list
             tower_list = game_info.tower_list
     
-            #if left click, place item at mouse position and append an item instance to corresponding list
-            match item_title:
-                case "House":
-                    self.append_if_possible(building_list, game_info, House(item_title, mouse_pos), item_cost)
-                case "ArcherTower":
-                    self.append_if_possible(tower_list, game_info, ArcherTower(ArcherTowerModel(), mouse_pos), item_cost)
-                case "BombTower":
-                    self.append_if_possible(tower_list, game_info, BombTower(BombTowerModel(), mouse_pos), item_cost)
-                case "TeslaTower":
-                    self.append_if_possible(tower_list, game_info, TeslaTower(TeslaTowerModel(), mouse_pos), item_cost)
-                case "Bomb":
-                    game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
-                case "Repair":
-                    if self.item_being_placed.repair_amount is None:
-                        return
-                    elif not functions.repair_tower_clicked(self.item_being_placed.repair_amount, game_info, event_list):
-                        self.placing_item = False
-                        self.item_being_placed = None
-                        return
+            #if left click, place item at mouse position and append an item instance to corresponding list. have to check if item_cost is int to make mypy happy.
+            if item_cost is not None:
+                match item_title:
+                    case "House":
+                        self.append_if_possible(building_list, game_info, House(item_title, mouse_pos), item_cost)
+                    case "ArcherTower":
+                        self.append_if_possible(tower_list, game_info, ArcherTower(ArcherTowerModel(), mouse_pos), item_cost)
+                    case "BombTower":
+                        self.append_if_possible(tower_list, game_info, BombTower(BombTowerModel(), mouse_pos), item_cost)
+                    case "TeslaTower":
+                        self.append_if_possible(tower_list, game_info, TeslaTower(TeslaTowerModel(), mouse_pos), item_cost)
+            else:
+                match item_title:
+                    case "Bomb":
+                        game_info.unattackable_list.append(Bomb(item_title, mouse_pos))
+                    case "Repair":
+                        if self.item_being_placed.repair_amount is None:
+                            return
+                        elif not functions.repair_tower_clicked(self.item_being_placed.repair_amount, game_info, event_list):
+                            self.placing_item = False
+                            self.item_being_placed = None
+                            return
             
             if self.item_being_placed.base_cooldown is not None:
                 self.item_being_placed.cooldown = self.item_being_placed.base_cooldown

@@ -14,23 +14,23 @@ class Upgrade:
         self.y = y
         self.rect = pygame.Rect(self.x, self.y, 100, 50)
         self.rect.center = (self.x, self.y)
-        self.curr_color = Color(200, 100, 200)
-        self.cannot_buy_color = Color(50, 50, 50)
-        self.hover_color = Color(100, 100, 100)
-        self.text_color = Color(255, 255, 255)
+        self.curr_color = (200, 100, 200)
+        self.cannot_buy_color = (50, 50, 50)
+        self.hover_color = (100, 100, 100)
+        self.text_color = (255, 255, 255)
 
         #Basic Info
         self.upgrade_name: str = upgrade_name
         self.upgrade_model: UpgradeModel = upgrade_model
-        self.cost = upgrade_model.cost
-        self.upgrade_level = upgrade_model.level
+        self.cost: int = upgrade_model.cost
+        self.upgrade_level: int = upgrade_model.level #level of the potential upgrade
+        self.current_item_level = current_item_level #level of the item being upgraded
         self.clicked = False
-        self.current_item_level = current_item_level
 
         #State
         self.can_buy: bool = False
 
-    def draw(self):
+    def draw(self) -> None:
         if self.can_buy:
             pygame.draw.rect(screen, self.curr_color, self.rect)
             functions.display_text(self.upgrade_name + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
@@ -46,12 +46,12 @@ class Upgrade:
 
 
 class UpgradeShop:
-    def __init__(self, tower_instance: ItemGroup):
-        self.tower_instance = tower_instance
-        current_level = self.tower_instance.current_level
+    def __init__(self, tower_instance: ItemGroup) -> None:
+        self.tower_instance: ItemGroup = tower_instance
+        current_level: int = self.tower_instance.current_level
 
-        y_base = 50
-        y_inc = 55
+        y_base: int = 50
+        y_inc: int = 55
         match self.tower_instance.title:
             case "ArcherTower":
                 self.upgrades = [
@@ -69,11 +69,11 @@ class UpgradeShop:
             case _:
                 self.upgrades = []
 
-    def drawShop(self):
+    def drawShop(self) -> None:
         for upgrade in self.upgrades:
             upgrade.draw()
 
-    def updateUpgrades(self, event_list, game_info):
+    def updateUpgrades(self, event_list: list[pygame.event.Event], game_info: GameInfo) -> None:
         mouse_pos = pygame.mouse.get_pos()
 
         for upgrade in self.upgrades:

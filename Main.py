@@ -19,7 +19,7 @@ class Main:
         pygame.init()
         self.state = "START_SCREEN"
 
-    def button(self, x, y, w, h, text, color, hover_color, text_color, text_font):
+    def button(self, x, y, w, h, text, color, hover_color, text_color, text_font) -> bool:
         rect = pygame.Rect(x, y, w, h)
         rect.center = (x, y)
         pygame.draw.rect(screen, color, rect)
@@ -33,7 +33,7 @@ class Main:
                 return True
         return False
 
-    def mainGameLoop(self):
+    def mainGameLoop(self) -> None:
         while True:
             if self.state == "START_SCREEN":
                 self.start_screen()
@@ -42,7 +42,7 @@ class Main:
             elif self.state == "END_SCREEN":
                 self.end_screen()
 
-    def start_screen(self):
+    def start_screen(self) -> None:
         start_screen = True
 
         clock = pygame.time.Clock()
@@ -63,8 +63,7 @@ class Main:
 
             pygame.display.update()
 
-    def run(self):
-
+    def run(self) -> None:
 
         clock = pygame.time.Clock()
         def pause_screen() -> None:
@@ -89,7 +88,7 @@ class Main:
 
         game_info = GameInfo()
         
-        townHall = TownHall('TownHall', (screen.get_width()/2, screen.get_height()/2))
+        townHall = TownHall('TownHall', (int(screen.get_width()/2), int(screen.get_height()/2)))
         game_info.building_list.append(townHall)
         game_info.update()
         player_click_damage = 0
@@ -184,7 +183,7 @@ class Main:
 
             pygame.display.update()
 
-    def end_screen(self):
+    def end_screen(self) -> None:
         end_screen = True
 
         clock = pygame.time.Clock()

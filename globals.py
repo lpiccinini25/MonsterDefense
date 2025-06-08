@@ -1,5 +1,5 @@
 import pygame
-from typing import Union, TYPE_CHECKING
+from typing import Union, TYPE_CHECKING, Optional
 pygame.init()
 screen = pygame.display.set_mode((950, 840))
 
@@ -8,14 +8,15 @@ if TYPE_CHECKING:
     from views.buildings import House, TownHall
     from views.player_abilities import Bomb
     from views.enemies import Ghoul, Golem, Wizard, Enemy
+    from models.upgrade_models import UpgradeModel
 
 height = screen.get_height()
 width = screen.get_width()
 
 class GameInfo:
     def __init__(self):
-        self.tower_list: list[ArcherTower | BombTower | TeslaTower] = []
-        self.building_list: list[House | TownHall] = []
+        self.tower_list: list[ItemGroup] = []
+        self.building_list: list[ItemGroup] = []
         self.all_purchasables: list[ItemGroup] = []
         self.enemy_list: list[Enemy] = []
         self.unattackable_list: list[Bomb] = []
@@ -55,6 +56,19 @@ class ItemGroup:
             self.current_health = self.base_health
         else:
             self.current_health += repair_amount
+
+    def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
+        self.current_level += 1
+        self.damage = upgrade_model.damage
+        self.attack_range = upgrade_model.attack_range
+        self.base_attack_cooldown = upgrade_model.base_attack_cooldown
+        self.image = pygame.image.load(newImage).convert()
+        self.image.set_colorkey((0, 0, 0))
+        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image_rect = self.image.get_rect(center=self.pos)
+
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> Optional[bool]:
+        return False
 
 
 
