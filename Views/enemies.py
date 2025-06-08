@@ -12,6 +12,7 @@ class Enemy():
     def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[float, float]):
 
         enemy_name = enemy_model.title
+        self.points = enemy_model.points
 
         self.pos: tuple[float, float] = pos
         self.scaling: float = scaling**2

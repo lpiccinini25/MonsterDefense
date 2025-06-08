@@ -40,9 +40,15 @@ def display_rect(x: int, y: int, w: int, h: int, color: tuple[int, int, int]) ->
     rect.center = (x, y)
     pygame.draw.rect(screen, color, rect)
 
+def scale_image(image: pygame.Surface, target_width: int) -> pygame.Surface:
+    original_width, original_height = image.get_size()
+    aspect_ratio = original_height / original_width
+    new_height = int(target_width * aspect_ratio)
+    return pygame.transform.scale(image, (target_width, new_height))
+
 def display_image(image: pygame.Surface, x: int, y: int, scaling: int) -> None:
     image.set_colorkey((0, 0, 0))
-    image = pygame.transform.scale(image, (scaling, scaling))
+    image = scale_image(image, scaling)
     image_rect = image.get_rect(center=(x, y))
     screen.blit(image, image_rect)
 

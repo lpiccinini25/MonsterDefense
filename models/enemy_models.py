@@ -2,8 +2,9 @@ from typing import Optional
 
 class EnemyModel:
     def __init__(self):
-        #EnemyModel Title
+        #Basic Info
         self.title: str
+        self.points: int
 
         #Image Size
         self.size: int
@@ -25,6 +26,7 @@ class EnemyModel:
 class GhoulModel(EnemyModel):
     def __init__(self):
         self.title = "Ghoul"
+        self.points = 5
 
         self.size: int = 25
 
@@ -42,6 +44,7 @@ class GhoulModel(EnemyModel):
 class GolemModel(EnemyModel):
     def __init__(self):
         self.title = "Golem"
+        self.points = 15
 
         self.size: int = 35
 
@@ -59,6 +62,7 @@ class GolemModel(EnemyModel):
 class WizardModel(EnemyModel):
     def __init__(self):
         self.title = "Wizard"
+        self.points = 10
 
         self.size: int = 25
 

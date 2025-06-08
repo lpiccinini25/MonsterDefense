@@ -20,6 +20,7 @@ class GameInfo:
         self.all_purchasables: list[ItemGroup] = []
         self.enemy_list: list[Enemy] = []
         self.unattackable_list: list[Bomb] = []
+        self.point_total: int = 0
 
         self.gold: int = 6
         self.player_click_damage: int = 0
@@ -57,7 +58,8 @@ class ItemGroup:
         else:
             self.current_health += repair_amount
 
-    def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
+    #quotes added on UpgradeModel to avoid type checking error at runtime
+    def upgrade_tower(self, newImage: str, upgrade_model: "UpgradeModel", game_info: GameInfo) -> None:
         self.current_level += 1
         self.damage = upgrade_model.damage
         self.attack_range = upgrade_model.attack_range
