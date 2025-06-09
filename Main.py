@@ -19,7 +19,7 @@ class Main:
         pygame.init()
         self.state: str = "START_SCREEN"
         self.points_earned: list[int] = []
-        self.monster_logo_image: pygame.Surface = pygame.image.load("assets/MonsterDefense.png")
+        self.monster_logo_image: pygame.Surface = functions.load_image("MonsterDefense", 200)
 
     def button(self, x, y, w, h, text, color, hover_color, text_color, text_font) -> bool:
         rect = pygame.Rect(x, y, w, h)
@@ -52,7 +52,7 @@ class Main:
         while start_screen:
 
             screen.fill((0,0,0))
-            functions.display_image(self.monster_logo_image, int(width/2), 200, 400)
+            functions.display_image_new_rect(self.monster_logo_image, int(width/2), 200)
             event_list = pygame.event.get()
             for event in event_list:
                 if event.type == QUIT:
@@ -82,7 +82,7 @@ class Main:
                 pygame.display.update()
 
         #Images Preloaded
-        tombstone_image = pygame.image.load("assets/Tombstone.png").convert()
+        tombstone_image = functions.load_image("Tombstone", 35)
 
         run_game = True
         placing = False
@@ -137,7 +137,7 @@ class Main:
 
             functions.display_text("Points: "+str(game_info.point_total), (255, 255, 255), font, 700, screen.get_height()-125)
 
-            functions.display_image(tombstone_image, wave_manager.spawn_zone_x+int(wave_manager.spawn_zone_w/2), wave_manager.spawn_zone_y+int(wave_manager.spawn_zone_h/2), 35)
+            functions.display_image_new_rect(tombstone_image, wave_manager.spawn_zone_x+int(wave_manager.spawn_zone_w/2), wave_manager.spawn_zone_y+int(wave_manager.spawn_zone_h/2))
 
             #Tower Stuff
 
@@ -216,9 +216,13 @@ class Main:
             screen_width = screen.get_width()
             screen_height = screen.get_height()
 
-            functions.display_image(self.monster_logo_image, int(width/2), 200, 400)
+            functions.display_image_new_rect(self.monster_logo_image, int(width/2), 200)
 
             functions.display_text("You earned " + str(self.points_earned[len(self.points_earned)-1]) + " points!", (255, 255, 255), font, int(width/2), 550)
+
+            for i in range(1, len(self.points_earned)):
+                inc = i*25
+                functions.display_text(str(self.points_earned[i]) + " points!", (255, 255, 255), font, int(width/2), 550+inc)
 
             if self.button(screen_width/2, screen_height*4/5, 100, 50, "Try Again!", (0, 200, 0), (0, 220, 0), (0, 0, 0), font):
                 end_screen = False

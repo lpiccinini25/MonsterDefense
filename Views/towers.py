@@ -3,6 +3,7 @@ from typing import Optional
 from pygame import Color
 from globals import screen, ItemGroup, GameInfo
 import functions
+import colors
 
 from hovered_assets import hover_ArcherTower
 from views.enemies import Enemy
@@ -17,21 +18,9 @@ class Tower(ItemGroup):
         self.broken: bool = False
         self.current_level: int = 1
 
-        #Image Info
-        self.size: int = tower_model.size
-
-        self.image: pygame.Surface = pygame.image.load("assets/"+self.title+".png").convert()
-        self.image.set_colorkey((0, 0, 0))
-        self.image = pygame.transform.scale(self.image, (40, 40))
-        self.image_rect = self.image.get_rect(center=self.pos)
-
-        self.broken_image: pygame.Surface = pygame.image.load("assets/Broken"+self.title+".png").convert()
-        self.broken_image.set_colorkey((0, 0, 0))
-        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
-        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
-
-        self.hover: pygame.Surface
-        self.hover_rect: pygame.Rect
+        #Image 
+        self.image_width: int = 40
+        self.load_images_and_rects()
 
         #Tower Stats
         self.attack_range: int = tower_model.attack_range
@@ -44,21 +33,19 @@ class Tower(ItemGroup):
         #Repair Stats
         self.base_repair_time: int = tower_model.base_repair_time
         self.repair_time: int = self.base_repair_time
-
-
-    def draw(self, health_bar_color: tuple[int, int, int]) -> None:
+    
+    def draw(self) -> None:
         mouse_pos = pygame.mouse.get_pos()
         if not self.broken:
             if self.image_rect.collidepoint(mouse_pos):
-                screen.blit(self.hover, self.hover_rect)
-                functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color) 
+                functions.display_image_static(self.hover_image, self.hover_image_rect)
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, self.image_width*7/10, 14) 
             else:
-                screen.blit(self.image, self.image_rect)
-                functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
+                functions.display_image_static(self.image, self.image_rect)
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, self.image_width*7/10, 14) 
         else:
-            screen.blit(self.broken_image, self.broken_image_rect)
-            respawn_bar_color = (255, 255, 255)
-            functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
+            functions.display_image_static(self.broken_image, self.broken_image_rect)
+            functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, self.image_width*7/10, 14) 
 
     def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
         self.current_level += 1
@@ -74,10 +61,6 @@ class ArcherTower(Tower):
     def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
         super().__init__(tower_model, pos)
 
-        self.hover: pygame.Surface = hover_ArcherTower
-        self.hover = pygame.transform.scale(self.hover, (40, 40))
-        self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
-
         #Arrow
         self.arrow_active: bool = False
         self.startArrow_pos: tuple[int, int] = self.pos[0], self.pos[1]
@@ -87,7 +70,7 @@ class ArcherTower(Tower):
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
 
-        self.draw((255, 255, 255))
+        self.draw()
         enemy_list = game_info.enemy_list
  
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -173,9 +156,6 @@ class ArcherTower(Tower):
 class BombTower(Tower):
     def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
         super().__init__(tower_model, pos)
-        self.hover: pygame.Surface = self.image
-        self.hover = pygame.transform.scale(self.hover, (self.size, self.size))
-        self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
 
         #Bomb Tower Stats
         self.attack_cooldown: int = self.base_attack_cooldown
@@ -188,7 +168,7 @@ class BombTower(Tower):
         self.arrow_speed: int = 5
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
-        self.draw((255, 255, 255))
+        self.draw()
         enemy_list = game_info.enemy_list
 
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -270,9 +250,6 @@ class BombTower(Tower):
 class TeslaTower(Tower):
     def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
         super().__init__(tower_model, pos)
-        self.hover: pygame.Surface = self.image
-        self.hover = pygame.transform.scale(self.hover, (self.size, self.size))
-        self.hover_rect: pygame.Rect = self.hover.get_rect(center=self.pos)
 
         #Tesla Tower Stats
         self.attack_cooldown: int = self.base_attack_cooldown
@@ -293,10 +270,8 @@ class TeslaTower(Tower):
         self.not_hit: list[Enemy]
 
         #Bolt Image
-        self.bolt_image: pygame.Surface = pygame.image.load("assets/ElectricBolt.png").convert()
-        self.bolt_image.set_colorkey((0, 0, 0))
-        self.bolt_image = pygame.transform.scale(self.bolt_image, (40, 40))
-        self.bolt_image_rect = self.bolt_image.get_rect(center=self.bolt_pos)
+        self.bolt_width_size: int = 40
+        self.bolt_image: pygame.Surface = functions.load_image("ElectricBolt", self.bolt_width_size)
     
     def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
         self.current_level += 1
@@ -312,7 +287,7 @@ class TeslaTower(Tower):
         self.image_rect = self.image.get_rect(center=self.pos)
     
     def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
-        self.draw((255, 255, 255))
+        self.draw()
         enemy_list = game_info.enemy_list
 
         #if not broken, either decrement attackcooldown or fire an attack, else, check to see if building fully repaired and if so
@@ -401,4 +376,4 @@ class TeslaTower(Tower):
 
         self.bolt_pos = self.bolt_pos[0]+dx_inc, self.bolt_pos[1]+dy_inc
 
-        functions.display_image(self.bolt_image, self.bolt_pos[0], self.bolt_pos[1], 20)
+        functions.display_image_new_rect(self.bolt_image, self.bolt_pos[0], self.bolt_pos[1])

@@ -1,67 +1,65 @@
 from globals import screen, ItemGroup, GameInfo
 from models.upgrade_models import UpgradeModel
+import colors
 import functions
 import pygame
 
 class building(ItemGroup):
     def __init__(self, title, pos):
+        #Basic Info
         self.pos: tuple[int, int] = pos
         self.title: str = title
 
+        #Image
+        self.image_width: int
+
         self.broken: bool = False
 
-        self.image: pygame.Surface = pygame.image.load("assets/"+title+".png")
-        self.image.set_colorkey((0, 0, 0))
 
         self.current_level: int = 1
 
 class House(building):
     def __init__(self, title: str, pos: tuple[int, int]) -> None:
         super().__init__(title, pos)
+        #Image 
+        self.image_width: int = 30
+        self.load_images_and_rects()
 
         self.base_repair_time: int = 2000
         self.repair_time: int = self.base_repair_time
 
-        self.size: int = 30
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
-        self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
-
-        self.broken_image: pygame.Surface = pygame.image.load("assets/BrokenHouse.png").convert()
-        self.broken_image.set_colorkey((0, 0, 0))
-        self.broken_image = pygame.transform.scale(self.broken_image, (30, 30))
-        self.broken_image_rect: pygame.Rect = self.broken_image.get_rect(center=self.pos)
 
         self.base_health: int = 100
         self.current_health: int = self.base_health
-        self.defaultGoldGenerationCoolDown: int = 1000
-        self.goldGenerationCoolDown: int = self.defaultGoldGenerationCoolDown
+        self.base_gold_generation_cooldown: int = 1000
+        self.gold_generation_cooldown: int = self.base_gold_generation_cooldown
 
-    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> None:
+    def update(self, game_info: GameInfo, event_list: list[pygame.event.Event]) -> bool:
 
         self.draw()
 
         if not self.broken:
-            if self.goldGenerationCoolDown == 0:
-                self.goldGenerationCoolDown = self.defaultGoldGenerationCoolDown
+            if self.gold_generation_cooldown == 0:
+                self.gold_generation_cooldown = self.base_gold_generation_cooldown
                 game_info.gold += 1
             else:
-                self.goldGenerationCoolDown -= 1
+                self.gold_generation_cooldown -= 1
         elif self.repair_time != 0:
             self.repair_time -= 1
         else:
             self.repair_time = self.base_repair_time
             self.broken = False
             self.current_health = self.base_health
-            
-    def draw(self) -> None:
-        if not self.broken:
-            screen.blit(self.image, self.image_rect)
-            health_bar_color = (255, 255, 255)
-            functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color)
-        else:
-            screen.blit(self.broken_image, self.broken_image_rect)
-            respawn_bar_color = (255, 255, 255)
-            functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, respawn_bar_color)
+        
+        if functions.is_clicked_on(self.image_rect, event_list):
+            return True
+        return False
+    
+    def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
+        self.current_level += 1
+        if upgrade_model.base_gold_generation_cooldown is not None:
+            self.base_gold_generation_cooldown = upgrade_model.base_gold_generation_cooldown
+        self.image, self.rect_image = functions.load_image_and_rect(upgrade_model.title, 30, self.pos)
 
 class TownHall(building):
     def __init__(self, title: str, pos: tuple[int, int]):
@@ -70,9 +68,10 @@ class TownHall(building):
         self.title: str = "TownHall"
         self.pos = (int(screen.get_width()/2), int(screen.get_height()/2))
 
-        self.size: int = 75
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
-        self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
+        #Image 
+        self.image_width: int = 75
+        self.load_images_and_rects()
+
         self.base_health: int = 1000
         self.current_health: int = self.base_health
 
@@ -82,12 +81,17 @@ class TownHall(building):
         if functions.is_clicked_on(self.image_rect, event_list):
             return True
         return False
-    
+
     def draw(self) -> None:
-        screen.blit(self.image, self.image_rect)
-        health_bar_color = (255, 255, 255)
-        functions.display_health_bar(self, self.current_health, self.base_health, health_bar_color, override_size=50, override_gap=21)
-        
+        mouse_pos = pygame.mouse.get_pos()
+        if not self.broken:
+            if self.image_rect.collidepoint(mouse_pos):
+                functions.display_image_static(self.hover_image, self.hover_image_rect)
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, 50, 20) 
+            else:
+                functions.display_image_static(self.image, self.image_rect)
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, 50, 20)
+
     def upgrade_tower(self, newImage: str, tower_model: UpgradeModel, game_info: GameInfo):
         game_info.caps['ArcherTowerCap'] += 2
         game_info.caps['HouseCap'] += 2

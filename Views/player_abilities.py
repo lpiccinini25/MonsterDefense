@@ -8,12 +8,13 @@ class Ability:
         self.title: str = title
         self.pos: tuple[int, int] = pos
 
-        self.image: pygame.Surface = pygame.image.load("assets/"+title+".png").convert()
-        self.image.set_colorkey((0, 0, 0))
-        self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
+        self.image_width: int = 20
+        self.image: pygame.Surface
+        self.image_rect: pygame.Rect
+        self.image, self.image_rect = functions.load_image_and_rect(self.title, self.image_width, self.pos)
     
     def draw(self) -> None:
-        screen.blit(self.image, self.image_rect)
+        functions.display_image_static(self.image, self.image_rect)
 
 class Bomb(Ability):
     def __init__(self, title: str, pos: tuple[int, int]) -> None:
@@ -26,14 +27,10 @@ class Bomb(Ability):
         self.damage: int = 40
         self.explosion_radius: int = 60
 
-        #Image Stuff
-        self.size: int = 20
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
-        self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
     
     def draw(self) -> None:
         cooldown_bar_color = (255, 255, 255)
-        screen.blit(self.image, self.image_rect)
+        functions.display_image_static(self.image, self.image_rect)
         functions.display_health_bar(self, self.fuse_time, self.base_fuse_time, cooldown_bar_color)
 
     def is_exploding(self) -> bool:

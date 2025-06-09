@@ -11,14 +11,16 @@ from models.enemy_models import EnemyModel
 class Enemy():
     def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[float, float]):
 
-        enemy_name = enemy_model.title
+        self.title = enemy_model.title
         self.points = enemy_model.points
+
 
         self.pos: tuple[float, float] = pos
         self.scaling: float = scaling**2
-        self.size: int = enemy_model.size
-        self.image: pygame.Surface = pygame.image.load("assets/"+enemy_name+".png").convert()
-        self.image.set_colorkey((0, 0, 0))
+
+        #Image
+        self.image_width: int = enemy_model.size
+        self.image: pygame.Surface = functions.load_image(self.title, self.image_width)
         self.image_rect: pygame.Rect = self.image.get_rect(center=self.pos)
 
         #Stats -- 
@@ -121,19 +123,16 @@ class Enemy():
 class Ghoul(Enemy):
     def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[int, int]):
         super().__init__(enemy_model, scaling, pos)
-        self.size: int = 25
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
+
 
 class Golem(Enemy):
     def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[int, int]):
         super().__init__(enemy_model, scaling, pos)
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
 
 class Wizard(Enemy):
     def __init__(self, enemy_model: EnemyModel, scaling: float, pos: tuple[int, int]):
         super().__init__(enemy_model, scaling, pos)
-        self.image: pygame.Surface = pygame.transform.scale(self.image, (self.size, self.size))
 
         #Arrow Info
         self.arrow_active: bool = False

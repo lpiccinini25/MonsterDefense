@@ -15,6 +15,7 @@ class UpgradeModel:
 
         #Optionals
         self.bolt_spread_amount: Optional[int]
+        self.base_gold_generation_cooldown: Optional[int]
 
 class ArcherTowerLevel2(UpgradeModel):
     def __init__(self):
@@ -62,3 +63,13 @@ class TownHallLevelUp(UpgradeModel):
         self.title: str = "TownHallLevel2"
         self.level: int = current_level + 1
         self.cost: int = 10 + current_level * 5
+
+class HouseLevel2(UpgradeModel):
+    def __init__(self):
+        #Basic Info
+        self.title: str = "HouseLevel2"
+        self.level: int = 2
+        self.cost: int = 2
+
+        #Stats
+        self.base_gold_generation_cooldown = 600

@@ -30,7 +30,7 @@ class Item:
 
         #Item Image
         self.cap = game_info.caps[title+"Cap"]
-        self.base_image: pygame.Surface = pygame.image.load("assets/"+self.title+".png").convert()
+        self.base_image: pygame.Surface = functions.load_image(self.title, 40)
 
     def draw(self, game_info: GameInfo, amount_owned: int) -> None:
         self.rect.center = (self.x, self.y)
@@ -93,7 +93,7 @@ class Shop:
             else:
                 functions.display_rect(int(screen.get_width()/2), 50, 100, 50, (0, 255, 0))
                 functions.display_text("Ok!", (0, 0, 0), font, int(screen.get_width()/2), 50)
-            functions.display_image(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1], 40)
+            functions.display_image_new_rect(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1])
     
     def update_items_owned(self, game_info: GameInfo) -> None:
         all_items_owned: list[ItemGroup] = game_info.all_purchasables

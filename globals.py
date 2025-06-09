@@ -1,4 +1,6 @@
 import pygame
+import functions
+import colors
 from typing import Union, TYPE_CHECKING, Optional
 pygame.init()
 screen = pygame.display.set_mode((950, 840))
@@ -38,14 +40,49 @@ class GameInfo:
 
 class ItemGroup:
     def __init__(self):
-        self.broken: bool
+        #Basic Info 
         self.pos: tuple[int, int]
         self.title: str
-        self.current_health: int
-        self.base_health: int
+
+
+        #Image Stuff
+        self.image_width: int
+
         self.image: pygame.Surface
         self.image_rect: pygame.Rect
+        self.image_hover: pygame.Rect
+        self.image_hover_rect: pygame.Rect
+        self.image_broken: pygame.Surface
+        self.image_broken_rect: pygame.Rect
+
+
+
+        self.broken: bool
+        self.current_health: int
+        self.base_health: int
         self.current_level: int
+
+        #Repair Time
+        self.base_repair_time: int
+        self.repair_time: int
+
+    def load_images_and_rects(self) -> None:
+        self.image, self.image_rect = functions.load_image_and_rect(self.title, self.image_width, self.pos)
+        self.hover_image, self.hover_image_rect = functions.load_image_and_rect(self.title, int(self.image_width*3/4), self.pos)
+        self.broken_image, self.broken_image_rect = functions.load_image_and_rect("Broken"+self.title, self.image_width, self.pos)
+    
+    def draw(self) -> None:
+        mouse_pos = pygame.mouse.get_pos()
+        if not self.broken:
+            if self.image_rect.collidepoint(mouse_pos):
+                functions.display_image_static(self.hover_image, self.hover_image_rect)
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE) 
+            else:
+                functions.display_image_static(self.image, self.image_rect)
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE)
+        else:
+            functions.display_image_static(self.broken_image, self.broken_image_rect)
+            functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, colors.WHITE)
 
     def take_damage(self, damage_amount: int) -> None:
         self.current_health -= damage_amount
