@@ -25,7 +25,7 @@ All images created by ChatGPT. For upgraded tower images, I created them myself 
 # Play Yourself!
 *Go to Terminal*
 git clone https://github.com/lpiccinini25/MonsterDefense.git
-
+```
 *Navigate into project directory*
 cd MonsterDefense
 
@@ -34,3 +34,4 @@ pip install -r requirements.txt
 
 *run program*
 python main.py
+```
