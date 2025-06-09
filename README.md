@@ -16,7 +16,10 @@ Features:
 * Upgrade system with unlockable tower levels
 * Full in-game economy with purchasing, placement logic, and cooldown management
 
-# To Play For Yourself -- 
+# Photos-- 
+![early game](https://github.com/user-attachments/assets/7b2f5532-502d-46ca-b933-4e646f286b64)
+![late game](https://github.com/user-attachments/assets/c13f5a7b-f4e5-46a1-8686-dee0c68334ee)
+![being attacked](https://github.com/user-attachments/assets/35ade339-9f7a-48a3-ba3a-e150f8f15dbc)
 # Clone repo
 git clone https://github.com/username/MonsterDefense.git
 
@@ -25,5 +28,3 @@ cd MonsterDefense
 
 # Install dependencies
 pip install -r requirements.txt
-
-
