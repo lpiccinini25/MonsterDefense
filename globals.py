@@ -3,7 +3,7 @@ import functions
 import colors
 from typing import Union, TYPE_CHECKING, Optional
 pygame.init()
-screen = pygame.display.set_mode((950, 840))
+screen = pygame.display.set_mode((900, 840))
 
 if TYPE_CHECKING:
     from views.towers import ArcherTower, BombTower, TeslaTower

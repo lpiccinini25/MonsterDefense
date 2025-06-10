@@ -32,7 +32,7 @@ class GhoulModel(EnemyModel):
 
         self.health_scaling_factor: int = 30
         self.damage_scaling_factor: int = 14
-        self.speed_scaling_factor: int = 2
+        self.speed_scaling_factor: float = 1.5
 
         self.start_damage: int = 15
         self.start_health: int = 80
@@ -50,7 +50,7 @@ class GolemModel(EnemyModel):
 
         self.health_scaling_factor: int = 100
         self.damage_scaling_factor: int = 5
-        self.speed_scaling_factor: int = 2
+        self.speed_scaling_factor: float = 1.5
 
         self.start_damage: int = 10
         self.start_health: int = 260
@@ -68,7 +68,7 @@ class WizardModel(EnemyModel):
 
         self.health_scaling_factor: int = 20
         self.damage_scaling_factor: int = 5
-        self.speed_scaling_factor: int = 2
+        self.speed_scaling_factor: float = 1.5
 
         self.start_damage: int = 10
         self.start_health: int = 60

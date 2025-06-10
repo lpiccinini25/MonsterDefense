@@ -14,7 +14,7 @@ class WaveManager:
         self.wave_number: int = 1
         self.number_of_enemies: int = 6
         self.left_to_spawn: int = self.number_of_enemies
-        self.wave_number_multiplier: float = 0.22
+        self.wave_number_multiplier: float = 0.18
         self.enemy_strength: float = self.wave_number * self.wave_number_multiplier
 
         #Wave duration

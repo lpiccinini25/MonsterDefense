@@ -14,6 +14,7 @@ class UpgradeModel:
         self.base_attack_cooldown: int
 
         #Optionals
+        self.explosion_radius: Optional[int]
         self.bolt_spread_amount: Optional[int]
         self.base_gold_generation_cooldown: Optional[int]
 
@@ -40,6 +41,21 @@ class ArcherTowerLevel3(UpgradeModel):
         self.attack_range: int = 250
         self.damage: int = 70
         self.base_attack_cooldown: int = 80
+
+class BombTowerLevel2(UpgradeModel):
+    def __init__(self):
+        #Basic Info
+        self.title: str = "BombTowerLevel2"
+        self.level: int = 2
+        self.cost: int = 12
+
+        #Stats
+        self.attack_range: int = 150
+        self.damage: int = 80
+        self.base_attack_cooldown: int = 130
+
+        #Tesla Tower Specific
+        self.explosion_radius: Optional[int] = 50
 
 
 class TeslaTowerLevel2(UpgradeModel):

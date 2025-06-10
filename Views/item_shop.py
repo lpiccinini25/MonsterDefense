@@ -1,5 +1,4 @@
 import pygame
-from pygame import Color
 from typing import Optional
 
 from globals import screen, GameInfo
@@ -11,12 +10,15 @@ from views.buildings import House
 from views.player_abilities import Bomb
 
 from fonts import font
+import colors
 
 class Item:
     def __init__(self, game_info: GameInfo, x: int, y: int, text: str, title: str, cost: Optional[int]=None, base_cooldown: Optional[int]=None, repair_amount: Optional[int]=None):
         self.x: int = x
         self.y: int = y
-        self.rect = pygame.Rect(self.x, self.y, 100, 50)
+        self.w: int = 100
+        self.h: int = 50
+        self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
         self.curr_color = (200, 100, 200)
         self.hover_color = (100, 100, 100)
         self.default_color = (200, 100, 200)
@@ -39,9 +41,14 @@ class Item:
 
         #if costs money display price, if is cooldown based show cooldown
         if self.cost is not None:
-            functions.display_text(self.text + " costs: " + str(self.cost), self.text_color, font, self.x, self.y)
+            functions.display_text(self.text, self.text_color, font, self.x, int(self.y-self.h*.25))
+            functions.display_text("Costs: " + str(self.cost), self.text_color, font, self.x, int(self.y+self.h*.25))
         elif self.cooldown is not None:
-            functions.display_text(self.text + " cooldown is: " + str(self.cooldown) + " seconds.", self.text_color, font, self.x, self.y)
+            functions.display_text(self.text, self.text_color, font, self.x, int(self.y-self.h*.25))
+            if self.cooldown != 0:
+                functions.display_text("Cooldown is: " + str(int(self.cooldown/60)) + " seconds.", self.text_color, font, self.x, int(self.y+self.h*.25))
+            else:
+                functions.display_text("Cooldown is: Ready!", self.text_color, font, self.x, int(self.y+self.h*.25))
         functions.display_text("Owned: " + str(amount_owned) + "/"+str(self.cap), (255, 255, 255), font, self.x+90, self.y)
 
 class Shop:
@@ -54,15 +61,15 @@ class Shop:
         self.placed_too_close_warning_duration: int = self.placed_too_close_warning_base_duration
 
         inc: int = 60
-        base: int = 75
-        y: int = 50
+        self.base_x: int = 75
+        self.base_y: int = 50
         self.items: list[Item] = [
-            Item(game_info, base, y, "Archer Tower", "ArcherTower", cost=2),
-            Item(game_info, base, y+inc, "Tesla Tower", "TeslaTower", cost=4),
-            Item(game_info, base, y+inc*2, "Bomb Tower", "BombTower", cost=6),
-            Item(game_info, base, y+inc*3, "House", "House", cost=2,),
-            Item(game_info, base, y+inc*4, "Bomb", "Bomb", base_cooldown=2000),
-            Item(game_info, base, y+inc*5, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
+            Item(game_info, self.base_x, self.base_y+inc, "Archer Tower", "ArcherTower", cost=2),
+            Item(game_info, self.base_x, self.base_y+inc*2, "Tesla Tower", "TeslaTower", cost=4),
+            Item(game_info, self.base_x, self.base_y+inc*3, "Bomb Tower", "BombTower", cost=6),
+            Item(game_info, self.base_x, self.base_y+inc*4, "House", "House", cost=2,),
+            Item(game_info, self.base_x, self.base_y+inc*5, "Bomb", "Bomb", base_cooldown=2000),
+            Item(game_info, self.base_x, self.base_y+inc*6, "Repair", "Repair", base_cooldown=3000, repair_amount=150)
         ]
 
         self.items_owned: dict[str, int] = dict()
@@ -77,6 +84,8 @@ class Shop:
                 self.placed_too_close_warning_duration -= 1
 
     def draw_items(self, game_info: GameInfo) -> None:
+        functions.display_rect(self.base_x, self.base_y, 125, 50, colors.PINK)
+        functions.display_text("Item Shop", colors.WHITE, font, self.base_x, self.base_y)
         for item in self.items:
             amount_owned = self.items_owned[item.title]
             item.draw(game_info, amount_owned)

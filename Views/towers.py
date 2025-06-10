@@ -159,7 +159,7 @@ class BombTower(Tower):
 
         #Bomb Tower Stats
         self.attack_cooldown: int = self.base_attack_cooldown
-        self.explosion_radius: int = 20
+        self.explosion_radius: int = 25
 
         #Arrow Info
         self.arrow_active: bool = False
@@ -246,6 +246,19 @@ class BombTower(Tower):
         grey = Color(200, 200, 200)
         bomb_radius = 3
         pygame.draw.circle(screen, grey, self.arrow_pos, bomb_radius, width=0)
+    
+    def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
+        self.current_level += 1
+        self.damage = upgrade_model.damage
+        self.attack_range = upgrade_model.attack_range
+        self.base_attack_cooldown = upgrade_model.base_attack_cooldown
+        if upgrade_model.explosion_radius is None:
+            return
+        self.explosion_radius = upgrade_model.explosion_radius
+        self.image = pygame.image.load(newImage).convert()
+        self.image.set_colorkey((0, 0, 0))
+        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image_rect = self.image.get_rect(center=self.pos)
 
 class TeslaTower(Tower):
     def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
