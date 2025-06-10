@@ -1,16 +1,16 @@
 import pygame
 from typing import Optional
 from pygame import Color
-from globals import screen, ItemGroup, GameInfo
+from globals import screen, GameInfo
 import functions
 import colors
 
 from hovered_assets import hover_ArcherTower
 from views.enemies import Enemy
-from models.item_models import TowerModel
+from models.item_models import ItemModel, TowerModel
 from models.upgrade_models import UpgradeModel
 
-class Tower(ItemGroup):
+class Tower(ItemModel):
     def __init__(self, tower_model: TowerModel, pos: tuple[int, int]):
         #Tower Info
         self.title: str = tower_model.title
@@ -39,13 +39,13 @@ class Tower(ItemGroup):
         if not self.broken:
             if self.image_rect.collidepoint(mouse_pos):
                 functions.display_image_static(self.hover_image, self.hover_image_rect)
-                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, self.image_width*7/10, 14) 
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, int(self.image_width*7/10), 14) 
             else:
                 functions.display_image_static(self.image, self.image_rect)
-                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, self.image_width*7/10, 14) 
+                functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, int(self.image_width*7/10), 14) 
         else:
             functions.display_image_static(self.broken_image, self.broken_image_rect)
-            functions.display_health_bar(self, self.current_health, self.base_health, colors.WHITE, self.image_width*7/10, 14) 
+            functions.display_respawn_bar(self, self.repair_time, self.base_repair_time, colors.WHITE, int(self.image_width*7/10), 14)
 
     def upgrade_tower(self, newImage: str, upgrade_model: UpgradeModel, game_info: GameInfo) -> None:
         self.current_level += 1

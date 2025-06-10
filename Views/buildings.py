@@ -1,10 +1,11 @@
-from globals import screen, ItemGroup, GameInfo
+from globals import screen, GameInfo
+from models.item_models import ItemModel
 from models.upgrade_models import UpgradeModel
 import colors
 import functions
 import pygame
 
-class building(ItemGroup):
+class building(ItemModel):
     def __init__(self, title, pos):
         #Basic Info
         self.pos: tuple[int, int] = pos

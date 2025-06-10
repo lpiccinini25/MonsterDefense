@@ -86,22 +86,22 @@ def display_health_bar(self, current_health: int, base_health: int, health_bar_c
         outline.center = ((self.pos[0], self.pos[1]+override_gap))
         pygame.draw.rect(screen, OUTLINE_COLOR, outline, width=1)
 
-def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_bar_color: tuple[int, int, int], override_size: Optional[int] = None):
+def display_respawn_bar(self, repair_time: int, base_repair_time: int, repair_bar_color: tuple[int, int, int], override_size: Optional[int] = None, override_gap: Optional[int] = None):
     if override_size is None:
         repair_bar = pygame.Rect(0, 0, self.image_width, 2)
-        repair_bar.center = ((self.pos[0], self.pos[1]))
+        repair_bar.center = ((self.pos[0], self.pos[1]+15))
         repair_bar.width = ((base_repair_time-repair_time)/base_repair_time)*self.image_width
         pygame.draw.rect(screen, repair_bar_color, repair_bar)
         outline = pygame.Rect(0, 0, self.image_width, 4)
-        outline.center = ((self.pos[0], self.pos[1]))
+        outline.center = ((self.pos[0], self.pos[1]+15))
         pygame.draw.rect(screen, repair_bar_color, outline, width=1)
     else:
         healthBar = pygame.Rect(0, 0, override_size, 2)
-        healthBar.center = ((self.pos[0], self.pos[1]))
+        healthBar.center = ((self.pos[0], self.pos[1]+override_gap))
         healthBar.width = round(((base_repair_time-repair_time)/base_repair_time)*override_size)
         pygame.draw.rect(screen, repair_bar_color, healthBar)
         outline = pygame.Rect(0, 0, override_size, 4)
-        outline.center = ((self.pos[0], self.pos[1]))
+        outline.center = ((self.pos[0], self.pos[1]+override_gap))
         pygame.draw.rect(screen, repair_bar_color, outline, width=1)
 
 

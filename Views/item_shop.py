@@ -2,11 +2,11 @@ import pygame
 from pygame import Color
 from typing import Optional
 
-from globals import screen, GameInfo, ItemGroup
+from globals import screen, GameInfo
 import functions
 
 from views.towers import ArcherTower, BombTower, TeslaTower
-from models.item_models import ArcherTowerModel, BombTowerModel, TeslaTowerModel
+from models.item_models import ItemModel, ArcherTowerModel, BombTowerModel, TeslaTowerModel
 from views.buildings import House
 from views.player_abilities import Bomb
 
@@ -96,7 +96,7 @@ class Shop:
             functions.display_image_new_rect(self.item_being_placed.base_image, mouse_pos[0], mouse_pos[1])
     
     def update_items_owned(self, game_info: GameInfo) -> None:
-        all_items_owned: list[ItemGroup] = game_info.all_purchasables
+        all_items_owned: list[ItemModel] = game_info.all_purchasables
 
         #create dict for all items possible to place and set vals to 0
         self.items_owned = dict() 
@@ -116,7 +116,7 @@ class Shop:
                 return True
         return False
     
-    def append_if_possible(self, list_to_append_to: list[ItemGroup], game_info: GameInfo, to_place: ItemGroup, cost: int) -> None:
+    def append_if_possible(self, list_to_append_to: list[ItemModel], game_info: GameInfo, to_place: ItemModel, cost: int) -> None:
         if self.too_close(game_info, to_place.pos):
             self.placed_too_close = True
             return

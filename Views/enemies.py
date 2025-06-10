@@ -1,11 +1,12 @@
 import pygame
 import random
-from globals import screen, GameInfo, ItemGroup
 from pygame import Color
 import functions
+from globals import screen, GameInfo
 
 from typing import Optional
 from models.enemy_models import EnemyModel
+from models.item_models import ItemModel
 
 
 class Enemy():
@@ -64,7 +65,7 @@ class Enemy():
     def take_damage(self, damage_taken: int) -> None:
         self.current_health -= damage_taken
     
-    def attack(self, building: ItemGroup) -> None:
+    def attack(self, building: ItemModel) -> None:
         building.take_damage(self.damage)
     
     def slow_enemy(self, slow_strength: int, slow_duration: int) -> None:
@@ -82,7 +83,7 @@ class Enemy():
             self.slow_enemy(self.on_click_slow_strength, self.on_click_slow_duration)
             
 
-    def moveAndAttack(self, buildings: list[ItemGroup]) -> None:
+    def moveAndAttack(self, buildings: list[ItemModel]) -> None:
         minDistance = 2000000
         closestBuilding = None
 
@@ -137,7 +138,7 @@ class Wizard(Enemy):
         #Arrow Info
         self.arrow_active: bool = False
         self.arrow_pos: tuple[float, float] = (self.pos[0], self.pos[1])
-        self.arrow_target: Optional[ItemGroup] = None
+        self.arrow_target: Optional[ItemModel] = None
         self.arrow_speed: int = 3
 
     
@@ -148,7 +149,7 @@ class Wizard(Enemy):
         self.update_slow_status()
 
 
-    def moveAndAttack(self, buildings: list[ItemGroup]) -> None:
+    def moveAndAttack(self, buildings: list[ItemModel]) -> None:
         minDistance = 2000000
         closestBuilding = None
 
@@ -186,7 +187,7 @@ class Wizard(Enemy):
                 self.pos = (new_x, new_y)
                 self.image_rect = self.image.get_rect(center=self.pos)
         
-    def attack(self, building: ItemGroup) -> None:
+    def attack(self, building: ItemModel) -> None:
         self.arrow_target = building
         self.arrow_pos = self.pos
         self.arrow_active = True

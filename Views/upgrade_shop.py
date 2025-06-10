@@ -1,9 +1,10 @@
 import pygame
 from pygame import Color
-from globals import screen, ItemGroup, GameInfo
+from globals import screen, GameInfo
 from fonts import font
 import functions
 
+from models.item_models import ItemModel
 from models.upgrade_models import ArcherTowerLevel2, ArcherTowerLevel3, TeslaTowerLevel2, TownHallLevelUp, HouseLevel2, UpgradeModel
 
 class Upgrade:
@@ -46,8 +47,8 @@ class Upgrade:
 
 
 class UpgradeShop:
-    def __init__(self, tower_instance: ItemGroup) -> None:
-        self.tower_instance: ItemGroup = tower_instance
+    def __init__(self, tower_instance: ItemModel) -> None:
+        self.tower_instance: ItemModel = tower_instance
         current_level: int = self.tower_instance.current_level
 
         y_base: int = 50
