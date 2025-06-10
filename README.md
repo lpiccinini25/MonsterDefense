@@ -18,7 +18,8 @@ against waves of endlessly scaling enemies. See how far you can make it in this 
 # Credits
 All images created by ChatGPT. For upgraded tower images, I created them myself off the original ChatGPT generated image using Pixlr Editor. 
 
-# Photos-- 
+# Photos and Video Demo-- 
+[![Watch the video](https://youtu.be/T7IGeZCZqNk/0.jpg)](https://youtu.be/T7IGeZCZqNk)
 ![early game](https://github.com/user-attachments/assets/7b2f5532-502d-46ca-b933-4e646f286b64)
 ![late game](https://github.com/user-attachments/assets/c13f5a7b-f4e5-46a1-8686-dee0c68334ee)
 ![being attacked](https://github.com/user-attachments/assets/35ade339-9f7a-48a3-ba3a-e150f8f15dbc)
